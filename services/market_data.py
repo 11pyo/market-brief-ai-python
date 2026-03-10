@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from functools import partial
+import time
 
 import yfinance as yf
 
@@ -56,6 +56,55 @@ async def get_snapshot() -> dict:
     loop = asyncio.get_event_loop()
     async with asyncio.timeout(45):
         return await loop.run_in_executor(None, _fetch_snapshot_sync)
+
+
+_chart_cache: dict[str, tuple[float, list]] = {}
+CHART_CACHE_TTL = 60  # 1분
+
+PERIOD_CONFIG = {
+    "1d":  {"period": "1d",  "interval": "5m"},
+    "5d":  {"period": "5d",  "interval": "30m"},
+    "1mo": {"period": "1mo", "interval": "1d"},
+}
+
+
+def _fetch_chart_sync(symbol: str, period: str) -> list:
+    config = PERIOD_CONFIG.get(period, PERIOD_CONFIG["1d"])
+    hist = yf.Ticker(symbol).history(period=config["period"], interval=config["interval"])
+    if hist.empty:
+        return []
+    candles = []
+    seen = set()
+    for dt, row in hist.iterrows():
+        ts = int(dt.timestamp())
+        if ts in seen:
+            continue
+        seen.add(ts)
+        candles.append({
+            "time": ts,
+            "open":  round(float(row["Open"]),  4),
+            "high":  round(float(row["High"]),  4),
+            "low":   round(float(row["Low"]),   4),
+            "close": round(float(row["Close"]), 4),
+        })
+    return candles
+
+
+async def get_chart(name: str, period: str = "1d") -> list:
+    symbol = SYMBOLS.get(name)
+    if not symbol:
+        return []
+    cache_key = f"{symbol}:{period}"
+    now = time.time()
+    if cache_key in _chart_cache:
+        cached_at, cached_data = _chart_cache[cache_key]
+        if now - cached_at < CHART_CACHE_TTL:
+            return cached_data
+    loop = asyncio.get_event_loop()
+    async with asyncio.timeout(30):
+        candles = await loop.run_in_executor(None, _fetch_chart_sync, symbol, period)
+    _chart_cache[cache_key] = (now, candles)
+    return candles
 
 
 def format_for_llm(snapshot: dict) -> str:

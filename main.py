@@ -108,6 +108,17 @@ async def get_market_snapshot():
         return JSONResponse({"data": None, "message": str(e)}, status_code=500)
 
 
+# ===== 차트 데이터 =====
+@app.get("/api/market/chart")
+async def get_market_chart(name: str, period: str = "1d"):
+    try:
+        candles = await market_data.get_chart(name, period)
+        return {"data": {"name": name, "period": period, "candles": candles}}
+    except Exception as e:
+        logger.error(f"[Chart] 오류: {e}")
+        return JSONResponse({"data": None, "message": str(e)}, status_code=500)
+
+
 # ===== 포트폴리오 =====
 @app.get("/api/portfolio")
 async def get_portfolio():

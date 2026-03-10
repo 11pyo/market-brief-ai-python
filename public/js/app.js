@@ -6,6 +6,7 @@ const API = {
   briefingById: (id) => `/api/briefing/${id}`,
   briefingGenerate: '/api/briefing/generate/stream',
   marketSnapshot: '/api/market/snapshot',
+  marketChart: (name, period) => `/api/market/chart?name=${encodeURIComponent(name)}&period=${period}`,
   portfolio: '/api/portfolio',
   settings: '/api/settings',
   status: '/api/status',
@@ -17,6 +18,9 @@ let currentTab = 'dashboard';
 let marketRefreshInterval = null;
 let currentCurrency = 'KRW';
 let rawMarketData = null;
+let chartInstance = null;
+let currentChartName = null;
+let currentChartPeriod = '1d';
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -141,7 +145,9 @@ function renderMarketCards(rawData) {
       <div class="card-label">${name}</div>
       <div class="card-price">${price}</div>
       <div class="card-change ${direction}">${change} ${changePct}</div>
+      <div class="card-chart-hint">📈</div>
     `;
+    card.addEventListener('click', () => openChartModal(name));
     grid.appendChild(card);
   }
 }
@@ -461,6 +467,121 @@ async function savePortfolio() {
     showToast(json.message || t('toastPortfolioOk'), 'success');
   } catch (err) {
     showToast(t('toastSaveFail'), 'error');
+  }
+}
+
+// ===== CHART MODAL =====
+async function openChartModal(name) {
+  currentChartName = name;
+  currentChartPeriod = '1d';
+  document.getElementById('chart-modal-title').textContent = name;
+  document.getElementById('chart-modal').classList.add('active');
+
+  // 기간 탭 초기화
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.period-tab[data-period="1d"]').classList.add('active');
+
+  // 기간 탭 이벤트 (중복 등록 방지)
+  document.querySelectorAll('.period-tab').forEach(tab => {
+    tab.onclick = async () => {
+      document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentChartPeriod = tab.dataset.period;
+      await loadChart(name, currentChartPeriod);
+    };
+  });
+
+  await loadChart(name, '1d');
+}
+
+function closeChartModal() {
+  document.getElementById('chart-modal').classList.remove('active');
+  if (chartInstance) {
+    chartInstance.remove();
+    chartInstance = null;
+  }
+}
+
+function handleChartModalClick(e) {
+  if (e.target === document.getElementById('chart-modal')) closeChartModal();
+}
+
+async function loadChart(name, period) {
+  const container = document.getElementById('chart-container');
+  container.innerHTML = `<div class="chart-loading">${t('chartLoading')}</div>`;
+
+  if (chartInstance) {
+    chartInstance.remove();
+    chartInstance = null;
+  }
+
+  try {
+    const res = await fetch(API.marketChart(name, period));
+    const json = await res.json();
+
+    if (!json.data || !json.data.candles || json.data.candles.length === 0) {
+      container.innerHTML = `<div class="chart-empty">${t('chartNoData')}</div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+
+    chartInstance = LightweightCharts.createChart(container, {
+      width: container.clientWidth,
+      height: 320,
+      layout: {
+        background: { color: 'transparent' },
+        textColor: '#94a3b8',
+        fontSize: 12,
+      },
+      grid: {
+        vertLines: { color: 'rgba(99, 102, 241, 0.08)' },
+        horzLines: { color: 'rgba(99, 102, 241, 0.08)' },
+      },
+      crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+      rightPriceScale: { borderColor: 'rgba(99, 102, 241, 0.2)' },
+      timeScale: {
+        borderColor: 'rgba(99, 102, 241, 0.2)',
+        timeVisible: period !== '1mo',
+        secondsVisible: false,
+      },
+      handleScroll: true,
+      handleScale: true,
+    });
+
+    const candles = json.data.candles;
+
+    if (period === '1d') {
+      const series = chartInstance.addCandlestickSeries({
+        upColor: '#10b981',
+        downColor: '#ef4444',
+        borderUpColor: '#10b981',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#10b981',
+        wickDownColor: '#ef4444',
+      });
+      series.setData(candles);
+    } else {
+      const series = chartInstance.addAreaSeries({
+        lineColor: '#6366f1',
+        topColor: 'rgba(99, 102, 241, 0.25)',
+        bottomColor: 'rgba(99, 102, 241, 0)',
+        lineWidth: 2,
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 4,
+      });
+      series.setData(candles.map(c => ({ time: c.time, value: c.close })));
+    }
+
+    chartInstance.timeScale().fitContent();
+
+    // 반응형: 컨테이너 크기 변경 시 차트 크기 조정
+    new ResizeObserver(() => {
+      if (chartInstance) chartInstance.applyOptions({ width: container.clientWidth });
+    }).observe(container);
+
+  } catch (err) {
+    container.innerHTML = `<div class="chart-empty">${t('chartError')}: ${err.message}</div>`;
   }
 }
 
