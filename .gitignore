@@ -1,0 +1,15 @@
+.env
+.claude/
+server.log
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+data/briefings/
+data/portfolio.json
+data/settings.json
+*.egg-info/
+dist/
+build/
+.pytest_cache/
