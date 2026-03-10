@@ -54,9 +54,9 @@ async def track_visits(request: Request, call_next):
 
 # ===== SSE 브리핑 생성 =====
 @app.get("/api/briefing/generate/stream")
-async def briefing_stream(request: Request):
+async def briefing_stream(request: Request, lang: str = "ko"):
     async def generate():
-        async for event in sched.run_pipeline():
+        async for event in sched.run_pipeline(lang=lang):
             if await request.is_disconnected():
                 logger.info("[SSE] 클라이언트 연결 해제")
                 break

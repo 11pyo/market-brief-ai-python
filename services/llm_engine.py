@@ -33,7 +33,24 @@ PART 6 — 10초 마켓 대시보드
 CRITICAL: STOP IMMEDIATELY after PART 6. DO NOT generate an Expert Panel."""
 
 
-def _build_user_prompt(news_text: str, market_text: str, portfolio_text: str = "") -> str:
+LANG_INSTRUCTIONS = {
+    "ko": "Korean (한국어)",
+    "en": "English",
+    "zh": "Chinese (中文)",
+    "ja": "Japanese (日本語)",
+}
+
+PART7_LABELS = {
+    "ko": "PART 7 — 포트폴리오 맞춤 조언",
+    "en": "PART 7 — Personalized Portfolio Advice",
+    "zh": "PART 7 — 个性化投资组合建议",
+    "ja": "PART 7 — 個別ポートフォリオアドバイス",
+}
+
+
+def _build_user_prompt(news_text: str, market_text: str, portfolio_text: str = "", lang: str = "ko") -> str:
+    lang_str = LANG_INSTRUCTIONS.get(lang, "English")
+    part7_label = PART7_LABELS.get(lang, PART7_LABELS["en"])
     prompt = f"{FRAMEWORK_PROMPT}\n\n---\n\n{market_text}\n\n---\n\n{news_text}\n\n"
     if portfolio_text:
         prompt += (
@@ -42,9 +59,9 @@ def _build_user_prompt(news_text: str, market_text: str, portfolio_text: str = "
             "- How today's macro events specifically impact their holdings\n"
             "- Any rebalancing suggestions\n"
             "- Risk alerts specific to their portfolio composition\n"
-            'Include this as "PART 7 — 포트폴리오 맞춤 조언" at the very end. DO NOT generate an expert panel.\n\n'
+            f'Include this as "{part7_label}" at the very end. DO NOT generate an expert panel.\n\n'
         )
-    prompt += "---\n\nUsing the framework and data above, produce today's Morning Market Briefing in Korean (한국어). STOP completion as soon as you output Part 6 (or Part 7 if applicable)."
+    prompt += f"---\n\nUsing the framework and data above, produce today's Morning Market Briefing in {lang_str}. STOP completion as soon as you output Part 6 (or Part 7 if applicable)."
     return prompt
 
 
@@ -147,12 +164,13 @@ async def generate_briefing(
     news_text: str,
     market_text: str,
     portfolio_text: str = "",
+    lang: str = "ko",
 ) -> tuple[str, str, int]:
     """
     브리핑 생성.
     Returns: (content, model_name, generation_time_ms)
     """
-    user_prompt = _build_user_prompt(news_text, market_text, portfolio_text)
+    user_prompt = _build_user_prompt(news_text, market_text, portfolio_text, lang)
     chain = _build_provider_chain()
 
     if not chain:

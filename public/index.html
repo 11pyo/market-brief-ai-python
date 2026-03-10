@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
@@ -22,6 +22,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="증시흐름" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <script src="/js/i18n.js"></script>
   </head>
   <body>
     <!-- Top Navigation Bar -->
@@ -34,106 +35,61 @@
             <rect x="14" y="6" width="4" height="20" rx="1" fill="url(#bar3)" />
             <rect x="20" y="2" width="4" height="24" rx="1" fill="url(#bar4)" />
             <defs>
-              <linearGradient
-                id="bar1"
-                x1="4"
-                y1="18"
-                x2="4"
-                y2="26"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#6366f1" />
-                <stop offset="1" stop-color="#4f46e5" />
+              <linearGradient id="bar1" x1="4" y1="18" x2="4" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6366f1" /><stop offset="1" stop-color="#4f46e5" />
               </linearGradient>
-              <linearGradient
-                id="bar2"
-                x1="10"
-                y1="12"
-                x2="10"
-                y2="26"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#818cf8" />
-                <stop offset="1" stop-color="#6366f1" />
+              <linearGradient id="bar2" x1="10" y1="12" x2="10" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#818cf8" /><stop offset="1" stop-color="#6366f1" />
               </linearGradient>
-              <linearGradient
-                id="bar3"
-                x1="16"
-                y1="6"
-                x2="16"
-                y2="26"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#a5b4fc" />
-                <stop offset="1" stop-color="#818cf8" />
+              <linearGradient id="bar3" x1="16" y1="6" x2="16" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#a5b4fc" /><stop offset="1" stop-color="#818cf8" />
               </linearGradient>
-              <linearGradient
-                id="bar4"
-                x1="22"
-                y1="2"
-                x2="22"
-                y2="26"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#c7d2fe" />
-                <stop offset="1" stop-color="#a5b4fc" />
+              <linearGradient id="bar4" x1="22" y1="2" x2="22" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#c7d2fe" /><stop offset="1" stop-color="#a5b4fc" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-title">AI 모닝 브리핑</span>
-          <span class="brand-subtitle">증시흐름</span>
+          <span class="brand-title" data-i18n="brandTitle">AI 모닝 브리핑</span>
+          <span class="brand-subtitle" data-i18n="brandSubtitle">증시흐름</span>
         </div>
       </div>
       <div class="nav-tabs">
         <button class="nav-tab active" data-tab="dashboard" id="tab-dashboard">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7" rx="1" />
             <rect x="14" y="3" width="7" height="4" rx="1" />
             <rect x="14" y="10" width="7" height="11" rx="1" />
             <rect x="3" y="13" width="7" height="8" rx="1" />
           </svg>
-          대시보드
+          <span data-i18n="tabDashboard">대시보드</span>
         </button>
         <button class="nav-tab" data-tab="history" id="tab-history">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
           </svg>
-          히스토리
+          <span data-i18n="tabHistory">히스토리</span>
         </button>
         <button class="nav-tab" data-tab="portfolio" id="tab-portfolio">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
             <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
             <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
           </svg>
-          포트폴리오
+          <span data-i18n="tabPortfolio">포트폴리오</span>
         </button>
       </div>
       <div class="nav-actions">
+        <!-- 언어 선택기 -->
+        <div class="lang-switcher" title="Language / 언어 / 语言 / 言語">
+          <span class="lang-icon">🌐</span>
+          <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">한국어</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中文</button>
+          <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日本語</button>
+        </div>
+        <!-- 통화 전환 -->
         <div class="currency-switch-wrapper" title="브리핑 및 대시보드 통화 단위 전환">
           <span class="currency-label">KRW</span>
           <label class="switch">
@@ -144,22 +100,13 @@
         </div>
         <div class="status-indicator" id="api-status">
           <span class="status-dot"></span>
-          <span class="status-text">연결됨</span>
+          <span class="status-text" data-i18n="statusConnected">연결됨</span>
         </div>
         <button class="btn-generate" id="btn-generate" title="새 브리핑 생성">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12"
-            />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12" />
           </svg>
-          <span>새 브리핑 생성</span>
+          <span data-i18n="btnGenerate">새 브리핑 생성</span>
         </button>
       </div>
     </nav>
@@ -178,22 +125,22 @@
         <!-- System Stats Ribbon -->
         <div class="stats-ribbon">
           <div class="stat-item">
-            <span class="stat-label">오늘 방문자</span>
+            <span class="stat-label" data-i18n="statTodayVisitors">오늘 방문자</span>
             <span class="stat-value" id="stat-today-visitors">-</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <span class="stat-label">누적 방문자</span>
+            <span class="stat-label" data-i18n="statTotalVisitors">누적 방문자</span>
             <span class="stat-value" id="stat-total-visitors">-</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <span class="stat-label">오늘 API 호출</span>
+            <span class="stat-label" data-i18n="statTodayApi">오늘 API 호출</span>
             <span class="stat-value" id="stat-today-api">-</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <span class="stat-label">누적 API 호출</span>
+            <span class="stat-label" data-i18n="statTotalApi">누적 API 호출</span>
             <span class="stat-value" id="stat-total-api">-</span>
           </div>
         </div>
@@ -201,69 +148,38 @@
         <!-- Market Data Cards -->
         <section class="market-cards" id="market-cards">
           <div class="section-header">
-            <h2>📊 실시간 시장 데이터</h2>
+            <h2 data-i18n="sectionMarket">📊 실시간 시장 데이터</h2>
             <button class="btn-refresh" id="btn-refresh-market">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="23 4 23 10 17 10" />
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
               </svg>
-              새로고침
+              <span data-i18n="btnRefresh">새로고침</span>
             </button>
           </div>
-          <div class="cards-grid" id="cards-grid">
-            <!-- Dynamic market cards -->
-          </div>
+          <div class="cards-grid" id="cards-grid"></div>
         </section>
 
         <!-- AI Briefing Content -->
         <section class="briefing-section">
           <div class="section-header">
-            <h2>🧠 AI 모닝 브리핑</h2>
+            <h2 data-i18n="sectionBriefing">🧠 AI 모닝 브리핑</h2>
             <div class="briefing-meta" id="briefing-meta"></div>
           </div>
           <div class="briefing-content" id="briefing-content">
             <div class="empty-state">
               <div class="empty-icon">
-                <svg
-                  width="64"
-                  height="64"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  opacity="0.3"
-                >
-                  <path
-                    d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12"
-                  />
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                  <path d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12" />
                 </svg>
               </div>
-              <h3>아직 생성된 브리핑이 없습니다</h3>
-              <p>
-                상단의 <strong>"새 브리핑 생성"</strong> 버튼을 클릭하여 오늘의
-                AI 마켓 브리핑을 생성하세요.
-              </p>
+              <h3 data-i18n="emptyBriefingTitle">아직 생성된 브리핑이 없습니다</h3>
+              <p data-i18n="emptyBriefingDesc">상단의 "새 브리핑 생성" 버튼을 클릭하여 오늘의 AI 마켓 브리핑을 생성하세요.</p>
               <button class="btn-primary" onclick="generateBriefing()">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12"
-                  />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 3v3m6.366-.366-2.12 2.12M21 12h-3m.366 6.366-2.12-2.12M12 21v-3m-6.366.366 2.12-2.12M3 12h3m-.366-6.366 2.12 2.12" />
                 </svg>
-                첫 번째 브리핑 생성하기
+                <span data-i18n="btnFirstBriefing">첫 번째 브리핑 생성하기</span>
               </button>
             </div>
           </div>
@@ -274,12 +190,12 @@
       <div class="tab-content" id="content-history">
         <section class="history-section">
           <div class="section-header">
-            <h2>📅 브리핑 히스토리</h2>
+            <h2 data-i18n="sectionHistory">📅 브리핑 히스토리</h2>
           </div>
           <div class="history-list" id="history-list">
             <div class="empty-state">
-              <h3>아직 저장된 브리핑이 없습니다</h3>
-              <p>브리핑을 생성하면 자동으로 이곳에 기록됩니다.</p>
+              <h3 data-i18n="emptyHistoryTitle">아직 저장된 브리핑이 없습니다</h3>
+              <p data-i18n="emptyHistoryDesc">브리핑을 생성하면 자동으로 이곳에 기록됩니다.</p>
             </div>
           </div>
         </section>
@@ -289,81 +205,51 @@
       <div class="tab-content" id="content-portfolio">
         <section class="portfolio-section">
           <div class="section-header">
-            <h2>💼 포트폴리오 설정</h2>
+            <h2 data-i18n="sectionPortfolio">💼 포트폴리오 설정</h2>
             <button class="btn-save" id="btn-save-portfolio">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
-                />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
               </svg>
-              저장
+              <span data-i18n="btnSave">저장</span>
             </button>
           </div>
           <div class="portfolio-form" id="portfolio-form">
             <div class="form-group">
-              <label>투자 스타일</label>
+              <label data-i18n="labelStyle">투자 스타일</label>
               <select id="investment-style">
-                <option value="Conservative">보수적 (Conservative)</option>
-                <option value="Moderate">중립 (Moderate)</option>
-                <option value="Growth" selected>성장 (Growth)</option>
-                <option value="Aggressive">공격적 (Aggressive)</option>
+                <option value="Conservative" data-i18n-option="optConservative">보수적 (Conservative)</option>
+                <option value="Moderate" data-i18n-option="optModerate">중립 (Moderate)</option>
+                <option value="Growth" selected data-i18n-option="optGrowth">성장 (Growth)</option>
+                <option value="Aggressive" data-i18n-option="optAggressive">공격적 (Aggressive)</option>
               </select>
             </div>
             <div class="form-group">
-              <label>리스크 허용도</label>
+              <label data-i18n="labelRisk">리스크 허용도</label>
               <select id="risk-tolerance">
-                <option value="Low">낮음 (Low)</option>
-                <option value="Medium">중간 (Medium)</option>
-                <option value="Medium-High" selected>
-                  중간-높음 (Medium-High)
-                </option>
-                <option value="High">높음 (High)</option>
+                <option value="Low" data-i18n-option="optLow">낮음 (Low)</option>
+                <option value="Medium" data-i18n-option="optMedium">중간 (Medium)</option>
+                <option value="Medium-High" selected data-i18n-option="optMediumHigh">중간-높음 (Medium-High)</option>
+                <option value="High" data-i18n-option="optHigh">높음 (High)</option>
               </select>
             </div>
             <div class="form-group">
-              <label>총 자산 규모 (선택사항)</label>
-              <input
-                type="text"
-                id="total-assets"
-                placeholder="예: 1억원, $100,000"
-              />
+              <label data-i18n="labelAssets">총 자산 규모 (선택사항)</label>
+              <input type="text" id="total-assets" data-i18n-placeholder="placeholderAssets" placeholder="예: 1억원, $100,000" />
             </div>
-
-            <h3>자산 배분</h3>
-            <div class="allocations" id="allocations">
-              <!-- Dynamic allocation rows -->
-            </div>
+            <h3 data-i18n="labelAllocation">자산 배분</h3>
+            <div class="allocations" id="allocations"></div>
             <button class="btn-add" id="btn-add-allocation">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              자산 추가
+              <span data-i18n="btnAddAsset">자산 추가</span>
             </button>
-
-            <h3>관심 종목 (Watchlist)</h3>
+            <h3 data-i18n="labelWatchlist">관심 종목 (Watchlist)</h3>
             <div class="form-group">
-              <input
-                type="text"
-                id="watchlist"
-                placeholder="쉼표로 구분. 예: NVDA, AAPL, TSLA, SPY, BTC-USD"
-              />
+              <input type="text" id="watchlist" data-i18n-placeholder="placeholderWatchlist"
+                placeholder="쉼표로 구분. 예: NVDA, AAPL, TSLA, SPY, BTC-USD" />
             </div>
           </div>
         </section>
@@ -374,22 +260,20 @@
     <div class="loading-overlay" id="loading-overlay">
       <div class="loading-card">
         <div class="loading-spinner"></div>
-        <h3 id="loading-title">AI 브리핑 생성 중</h3>
-        <p id="loading-message">
-          글로벌 뉴스와 시장 데이터를 분석하고 있습니다...
-        </p>
+        <h3 id="loading-title" data-i18n="loadingTitle">AI 브리핑 생성 중</h3>
+        <p id="loading-message" data-i18n="loadingDesc">글로벌 뉴스와 시장 데이터를 분석하고 있습니다...</p>
         <div class="loading-steps">
           <div class="loading-step active" id="step-1">
-            <span class="step-icon">📡</span> 뉴스 수집
+            <span class="step-icon">📡</span> <span data-i18n="step1">뉴스 수집</span>
           </div>
           <div class="loading-step" id="step-2">
-            <span class="step-icon">🔍</span> 뉴스 필터링
+            <span class="step-icon">🔍</span> <span data-i18n="step2">뉴스 필터링</span>
           </div>
           <div class="loading-step" id="step-3">
-            <span class="step-icon">📊</span> 시장 데이터 조회
+            <span class="step-icon">📊</span> <span data-i18n="step3">시장 데이터 조회</span>
           </div>
           <div class="loading-step" id="step-4">
-            <span class="step-icon">🧠</span> AI 분석
+            <span class="step-icon">🧠</span> <span data-i18n="step4">AI 분석</span>
           </div>
         </div>
       </div>

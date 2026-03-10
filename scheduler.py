@@ -16,10 +16,10 @@ _lock = asyncio.Lock()
 _scheduler: AsyncIOScheduler | None = None
 
 
-async def run_pipeline() -> AsyncGenerator[dict, None]:
+async def run_pipeline(lang: str = "ko") -> AsyncGenerator[dict, None]:
     """브리핑 생성 파이프라인. SSE 이벤트를 yield한다."""
     if _lock.locked():
-        yield {"type": "error", "message": "이미 브리핑 생성 중입니다. 잠시 후 다시 시도하세요."}
+        yield {"type": "error", "message": "Already generating a briefing. Please wait."}
         return
 
     async with _lock:
@@ -45,7 +45,7 @@ async def run_pipeline() -> AsyncGenerator[dict, None]:
             # Step 4: AI 분석
             yield {"type": "progress", "step": 4, "message": "AI 브리핑 생성 중..."}
             content, model_name, elapsed_ms = await llm_engine.generate_briefing(
-                news_text, market_text, portfolio_text
+                news_text, market_text, portfolio_text, lang
             )
 
             # 저장

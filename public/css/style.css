@@ -1169,6 +1169,32 @@ body::before {
   background: var(--red);
   transition: width 1s ease;
 }
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.lang-icon { font-size: 0.85rem; margin-right: 2px; opacity: 0.8; }
+.lang-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.lang-btn:hover { color: #e2e8f0; background: rgba(99, 102, 241, 0.2); }
+.lang-btn.active { color: #fff; background: var(--accent-primary); }
+
 /* Currency Toggle Switch */
 .currency-switch-wrapper { display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
 .currency-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; transition: color 0.3s; }
