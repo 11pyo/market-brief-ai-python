@@ -20,5 +20,9 @@ services:
         value: gemini-3.0-flash
       - key: LLM_FALLBACK_MODEL
         value: gemini-2.0-flash
+      - key: UPSTASH_REDIS_URL
+        sync: false
+      - key: UPSTASH_REDIS_TOKEN
+        sync: false
       - key: TZ
         value: Asia/Seoul

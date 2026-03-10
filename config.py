@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     anthropic_api_key: str = ""
 
+    # Upstash Redis (영구 통계 저장)
+    upstash_redis_url: str = ""
+    upstash_redis_token: str = ""
+
     # LLM 설정
     llm_provider: str = "openai"           # openai | gemini | anthropic
     llm_model: str = "gpt-4o"
