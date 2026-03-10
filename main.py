@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 import scheduler as sched
 from config import settings
 from schemas import ApiResponse, Portfolio
-from services import briefing_store, market_data, portfolio_manager
+from services import briefing_store, market_data, portfolio_manager, stats_tracker
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,6 +36,22 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def track_visits(request: Request, call_next):
+    # 정적 자산·API 제외하고 페이지 방문만 집계
+    if request.url.path in ("/", "") or (
+        not request.url.path.startswith("/api/")
+        and not request.url.path.startswith("/css/")
+        and not request.url.path.startswith("/js/")
+        and not request.url.path.startswith("/icons/")
+        and not request.url.path.endswith((".json", ".js", ".css", ".png", ".ico"))
+    ):
+        ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
+        ip = ip.split(",")[0].strip()
+        stats_tracker.record_visit(ip)
+    return await call_next(request)
+
+
 # ===== SSE 브리핑 생성 =====
 @app.get("/api/briefing/generate/stream")
 async def briefing_stream(request: Request):
@@ -46,6 +62,8 @@ async def briefing_stream(request: Request):
                 break
             event_type = event.get("type", "message")
             # 프론트엔드가 named event 방식(addEventListener)을 사용하므로 event: 헤더 포함
+            if event_type == "complete":
+                stats_tracker.record_api_call()
             yield f"event: {event_type}\ndata: {json.dumps(event, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(
@@ -128,17 +146,10 @@ async def get_status():
     }
 
 
-# ===== 통계 (분석 기능 제거됨 — 프론트엔드 호환용 더미 응답) =====
+# ===== 통계 =====
 @app.get("/api/stats")
 async def get_stats():
-    return {
-        "data": {
-            "todayVisitors": 0,
-            "totalVisitors": 0,
-            "todayApiCalls": 0,
-            "totalApiCalls": 0,
-        }
-    }
+    return {"data": stats_tracker.get_stats()}
 
 
 # ===== 정적 파일 & SPA 폴백 =====
