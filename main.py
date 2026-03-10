@@ -155,6 +155,7 @@ async def get_stats():
 # ===== 정적 파일 & SPA 폴백 =====
 app.mount("/css", StaticFiles(directory="public/css"), name="css")
 app.mount("/js", StaticFiles(directory="public/js"), name="js")
+app.mount("/icons", StaticFiles(directory="public/icons"), name="icons")
 
 
 @app.get("/{full_path:path}")
