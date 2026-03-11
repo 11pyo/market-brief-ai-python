@@ -1154,7 +1154,9 @@ body::before {
   .lang-icon { display: none; }
   .currency-switch-wrapper { padding: 4px 8px; }
   .status-indicator { display: none; }
-  .stats-ribbon { gap: 12px; padding: 10px 12px; flex-wrap: wrap; }
+  .stats-ribbon { gap: 0; padding: 6px 8px; }
+  .stat-value { font-size: 0.85rem; }
+  .stat-label { font-size: 0.55rem; }
   .stat-divider { display: none; }
   .chart-modal-inner { border-radius: 12px; }
   #chart-container { min-height: 260px; }
@@ -1371,6 +1373,20 @@ input:checked + .slider:before { transform: translateX(20px); }
   .main-content {
     padding: 12px;
   }
+
+  /* 집계 리본 축소 */
+  .stats-ribbon {
+    padding: 7px 10px;
+    margin: 10px 0 0;
+    gap: 0;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  .stat-item { gap: 2px; flex: 1; }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0; }
+  .stat-value { font-size: 0.95rem; }
+  .stat-divider { height: 18px; }
+
 
   /* 두 줄 컨테이너 */
   .market-rows {
