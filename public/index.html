@@ -85,10 +85,10 @@
         <!-- 언어 선택기 -->
         <div class="lang-switcher">
           <span class="lang-icon">🌐</span>
-          <button class="lang-btn" data-lang="ko" onclick="setLang('ko')" title="한국어">한글</button>
-          <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">ENG</button>
-          <button class="lang-btn" data-lang="zh" onclick="setLang('zh')" title="中文">中語</button>
-          <button class="lang-btn" data-lang="ja" onclick="setLang('ja')" title="日本語">日語</button>
+          <button class="lang-btn" data-lang="ko" onclick="changeLang('ko')" title="한국어">한글</button>
+          <button class="lang-btn" data-lang="en" onclick="changeLang('en')" title="English">ENG</button>
+          <button class="lang-btn" data-lang="zh" onclick="changeLang('zh')" title="中文">中語</button>
+          <button class="lang-btn" data-lang="ja" onclick="changeLang('ja')" title="日本語">日語</button>
         </div>
         <!-- 통화 전환 -->
         <div class="currency-switch-wrapper" title="브리핑 및 대시보드 통화 단위 전환">
@@ -327,6 +327,18 @@
         </div>
         <div class="chart-modal-body">
           <div id="chart-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 언어 변경 재생성 확인 팝업 -->
+    <div class="lang-confirm-overlay" id="lang-confirm-modal">
+      <div class="lang-confirm-box">
+        <div class="lang-confirm-icon">🌐</div>
+        <p class="lang-confirm-msg" id="lang-confirm-msg"></p>
+        <div class="lang-confirm-actions">
+          <button class="lang-confirm-cancel" id="lang-confirm-cancel"></button>
+          <button class="lang-confirm-ok" id="lang-confirm-ok"></button>
         </div>
       </div>
     </div>

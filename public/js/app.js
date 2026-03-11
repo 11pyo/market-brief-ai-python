@@ -39,6 +39,34 @@ function highlightActiveLangBtn() {
   });
 }
 
+// ===== 언어 변경 (브리핑 재생성 확인 포함) =====
+function changeLang(lang) {
+  if (lang === currentLang) return;
+  const hasBriefing = !!_currentBriefingId;
+  setLang(lang); // UI 즉시 전환
+  highlightActiveLangBtn();
+  if (!hasBriefing) return;
+
+  // 브리핑이 있으면 재생성 확인 팝업
+  const modal = document.getElementById('lang-confirm-modal');
+  const msgEl = document.getElementById('lang-confirm-msg');
+  const okBtn = document.getElementById('lang-confirm-ok');
+  const cancelBtn = document.getElementById('lang-confirm-cancel');
+
+  msgEl.textContent = t('regenConfirmMsg');
+  okBtn.textContent = t('regenConfirmOk');
+  cancelBtn.textContent = t('regenConfirmCancel');
+
+  modal.classList.add('active');
+
+  okBtn.onclick = () => {
+    modal.classList.remove('active');
+    generateBriefing();
+  };
+  cancelBtn.onclick = () => modal.classList.remove('active');
+  modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+}
+
 // ===== TAB NAVIGATION =====
 function initTabs() {
   document.querySelectorAll('.nav-tab').forEach(tab => {
