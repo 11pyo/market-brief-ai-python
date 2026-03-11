@@ -1356,6 +1356,178 @@ input:checked + .slider:before { transform: translateX(20px); }
 .stat-value { font-size: 1.25rem; font-weight: 700; color: var(--text-heading); }
 .stat-divider { width: 1px; height: 24px; background: var(--border-subtle); }
 
+/* ===== CARD STAR (즐겨찾기) ===== */
+.card-star {
+  display: none; /* 데스크톱 기본: 숨김 */
+}
+
+/* ===== BRIEFING META MOBILE ===== */
+.briefing-meta-mobile {
+  display: none; /* 데스크톱 기본: 숨김 */
+}
+
+/* ===== MOBILE MARKET ROWS (< 768px) ===== */
+@media (max-width: 767px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  /* 두 줄 컨테이너 */
+  .market-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Row 1: 가로 스크롤 — grid 오버라이드 */
+  .cards-grid {
+    display: flex !important;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-bottom: 0 !important;
+    /* 우측 페이드 힌트 */
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+  .cards-grid::-webkit-scrollbar { display: none; }
+
+  /* 컴팩트 카드 */
+  .market-card {
+    flex: 0 0 130px;
+    min-width: 130px;
+    scroll-snap-align: start;
+    padding: 10px 10px 8px;
+  }
+  .market-card .card-label {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+  .market-card .card-price {
+    font-size: 16px;
+    margin-bottom: 3px;
+  }
+  .market-card .card-change {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-chart-hint { display: none; }
+
+  /* 즐겨찾기 별 버튼 */
+  .card-star {
+    display: block;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: none;
+    border: none;
+    font-size: 11px;
+    cursor: pointer;
+    opacity: 0.35;
+    transition: opacity 0.2s;
+    padding: 0;
+    line-height: 1;
+    z-index: 1;
+  }
+  .card-star.active { opacity: 1; }
+  .card-star:hover { opacity: 0.75; }
+
+  /* Row 2: 즐겨찾기 줄 */
+  .market-favorites-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .favorites-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-left: 2px;
+  }
+  .favorites-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+  .favorites-grid::-webkit-scrollbar { display: none; }
+  .favorites-grid .market-card {
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.12);
+  }
+
+  /* 브리핑 메타: 데스크톱 버전 숨기고 모바일 한 줄 표시 */
+  .section-header .briefing-meta { display: none; }
+  .briefing-meta-mobile {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 0 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  .briefing-meta-mobile::-webkit-scrollbar { display: none; }
+
+  .meta-pill {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .meta-pill-model {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .meta-pill-share {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--accent-light);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .meta-pill-share:hover {
+    background: rgba(99, 102, 241, 0.28);
+  }
+}
+
+/* 데스크톱: 즐겨찾기 줄 + 별 버튼 강제 숨김 */
+@media (min-width: 768px) {
+  #favorites-row { display: none !important; }
+  .card-star { display: none !important; }
+}
+
 /* ===== AD SLOTS ===== */
 .ad-slot {
   position: relative;

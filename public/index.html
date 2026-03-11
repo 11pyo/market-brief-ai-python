@@ -174,7 +174,14 @@
               <span data-i18n="btnRefresh">새로고침</span>
             </button>
           </div>
-          <div class="cards-grid" id="cards-grid"></div>
+          <!-- Row 1: 전체 카드 / Row 2: 즐겨찾기 (모바일 가로 스크롤) -->
+          <div class="market-rows" id="market-rows">
+            <div class="cards-grid" id="cards-grid"></div>
+            <div class="market-favorites-row" id="favorites-row" style="display:none">
+              <span class="favorites-label">⭐ 즐겨찾기</span>
+              <div class="favorites-grid" id="favorites-grid"></div>
+            </div>
+          </div>
         </section>
 
         <!-- AI Briefing Content -->
@@ -183,6 +190,8 @@
             <h2 data-i18n="sectionBriefing">🧠 AI 모닝 브리핑</h2>
             <div class="briefing-meta" id="briefing-meta"></div>
           </div>
+          <!-- 모바일 전용 한 줄 메타 -->
+          <div class="briefing-meta-mobile" id="briefing-meta-mobile"></div>
           <div class="briefing-content" id="briefing-content">
             <div class="empty-state">
               <div class="empty-icon">

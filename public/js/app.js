@@ -21,6 +21,7 @@ let rawMarketData = null;
 let chartInstance = null;
 let currentChartName = null;
 let currentChartPeriod = '1d';
+let favorites = new Set(JSON.parse(localStorage.getItem('mkt-favorites') || '[]'));
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -131,25 +132,75 @@ function getDisplayData(data) {
   return converted;
 }
 
+function _makeMarketCard(name, info) {
+  const direction = info.change >= 0 ? 'up' : 'down';
+  const price = info.price != null ? formatNumber(info.price, name) : 'N/A';
+  const change = info.change != null ? `${info.change >= 0 ? '+' : ''}${info.change.toFixed(2)}` : '';
+  const changePct = info.changePercent != null ? `(${info.changePercent >= 0 ? '+' : ''}${info.changePercent.toFixed(2)}%)` : '';
+  const isFav = favorites.has(name);
+  const card = document.createElement('div');
+  card.className = `market-card ${direction}`;
+  card.innerHTML = `
+    <div class="card-label">${name}</div>
+    <div class="card-price">${price}</div>
+    <div class="card-change ${direction}">${change} ${changePct}</div>
+    <div class="card-chart-hint">📈</div>
+    <button class="card-star ${isFav ? 'active' : ''}" data-name="${name}"
+      onclick="toggleFavorite('${name.replace(/'/g, "\\'")}', event)" title="즐겨찾기">${isFav ? '⭐' : '☆'}</button>
+  `;
+  card.addEventListener('click', () => openChartModal(name));
+  return card;
+}
+
 function renderMarketCards(rawData) {
   const data = getDisplayData(rawData);
   const grid = document.getElementById('cards-grid');
   grid.innerHTML = '';
   for (const [name, info] of Object.entries(data)) {
-    const card = document.createElement('div');
-    const direction = info.change >= 0 ? 'up' : 'down';
-    card.className = `market-card ${direction}`;
-    const price = info.price != null ? formatNumber(info.price, name) : 'N/A';
-    const change = info.change != null ? `${info.change >= 0 ? '+' : ''}${info.change.toFixed(2)}` : '';
-    const changePct = info.changePercent != null ? `(${info.changePercent >= 0 ? '+' : ''}${info.changePercent.toFixed(2)}%)` : '';
-    card.innerHTML = `
-      <div class="card-label">${name}</div>
-      <div class="card-price">${price}</div>
-      <div class="card-change ${direction}">${change} ${changePct}</div>
-      <div class="card-chart-hint">📈</div>
-    `;
-    card.addEventListener('click', () => openChartModal(name));
-    grid.appendChild(card);
+    grid.appendChild(_makeMarketCard(name, info));
+  }
+  renderFavoritesRow();
+}
+
+function saveFavorites() {
+  localStorage.setItem('mkt-favorites', JSON.stringify([...favorites]));
+}
+
+function toggleFavorite(name, e) {
+  e.stopPropagation();
+  if (favorites.has(name)) {
+    favorites.delete(name);
+  } else {
+    favorites.add(name);
+  }
+  saveFavorites();
+  // 별 버튼 상태 즉시 갱신
+  document.querySelectorAll('.card-star').forEach(btn => {
+    if (btn.dataset.name === name) {
+      const isFav = favorites.has(name);
+      btn.classList.toggle('active', isFav);
+      btn.textContent = isFav ? '⭐' : '☆';
+    }
+  });
+  renderFavoritesRow();
+}
+
+function renderFavoritesRow() {
+  const favRow = document.getElementById('favorites-row');
+  const favGrid = document.getElementById('favorites-grid');
+  if (!favGrid || !rawMarketData) return;
+  const favNames = [...favorites].filter(n => rawMarketData[n]);
+  if (favNames.length === 0) {
+    favRow.style.display = 'none';
+    return;
+  }
+  favRow.style.display = '';
+  const data = getDisplayData(rawMarketData);
+  favGrid.innerHTML = '';
+  for (const name of favNames) {
+    const info = data[name];
+    if (!info) continue;
+    favGrid.appendChild(_makeMarketCard(name, info));
   }
 }
 
@@ -234,6 +285,21 @@ function renderBriefing(briefing) {
       ${t('shareBtn')}
     </button>
   `;
+
+  // 모바일 전용 한 줄 메타
+  const mobileMeta = document.getElementById('briefing-meta-mobile');
+  if (mobileMeta) {
+    const shortDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
+    const shortModel = (briefing.model || 'AI').replace('gemini-', 'G-').replace('gpt-', 'GPT-').split('-preview')[0];
+    mobileMeta.innerHTML = `
+      <span class="meta-pill">🧠 AI 브리핑</span>
+      <span class="meta-pill">📅 ${shortDate}</span>
+      <span class="meta-pill meta-pill-model" title="${briefing.model || 'AI'}">🤖 ${shortModel}</span>
+      ${briefing.newsCount ? `<span class="meta-pill">📰 ${briefing.newsCount}건</span>` : ''}
+      ${briefing.generationTimeMs ? `<span class="meta-pill">⚡ ${(briefing.generationTimeMs / 1000).toFixed(0)}s</span>` : ''}
+      <button class="meta-pill-share" onclick="shareBriefing()">공유 ↗</button>
+    `;
+  }
 }
 
 async function shareBriefing() {
