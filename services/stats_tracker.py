@@ -37,7 +37,16 @@ async def _pipeline(commands: list) -> list:
                 headers={"Authorization": f"Bearer {settings.upstash_redis_token}"},
                 json=commands,
             )
-            return [item.get("result") for item in r.json()]
+            body = r.json()
+            if not isinstance(body, list):
+                logger.warning(f"[Stats] Redis 비정상 응답: {body}")
+                return []
+            results = []
+            for item in body:
+                if isinstance(item, dict) and "error" in item:
+                    logger.warning(f"[Stats] Redis 명령 오류: {item['error']}")
+                results.append(item.get("result") if isinstance(item, dict) else None)
+            return results
     except Exception as e:
         logger.warning(f"[Stats] Redis 호출 실패: {e}")
         return []

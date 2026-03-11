@@ -8,7 +8,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from config import settings
 from schemas import BriefingRecord
-from services import briefing_store, llm_engine, market_data, news_collector, news_filter, portfolio_manager
+from services import briefing_store, llm_engine, market_data, news_collector, news_filter, portfolio_manager, stats_tracker
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,8 @@ async def run_pipeline(lang: str = "ko") -> AsyncGenerator[dict, None]:
                 preview=content[:100].replace("\n", " "),
             )
             briefing_store.save_briefing(record)
+            await stats_tracker.record_api_call()
+            logger.info("[Scheduler] API 호출 집계 완료")
 
             yield {"type": "complete", "briefing": record.model_dump()}
 
