@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   loadDashboard();
   startMarketRefresh();
+  checkUrlBriefing();
 });
 
 function highlightActiveLangBtn() {
@@ -205,7 +206,10 @@ async function loadLatestBriefing() {
   }
 }
 
+let _currentBriefingId = null;
+
 function renderBriefing(briefing) {
+  _currentBriefingId = briefing.id || null;
   const content = document.getElementById('briefing-content');
   const meta = document.getElementById('briefing-meta');
   const html = parseBriefingContent(briefing.content);
@@ -222,7 +226,38 @@ function renderBriefing(briefing) {
     <span class="meta-tag">🤖 ${briefing.model || 'AI'}</span>
     <span class="meta-tag">${newsLabel}</span>
     ${briefing.generationTimeMs ? `<span class="meta-tag">⚡ ${(briefing.generationTimeMs / 1000).toFixed(1)}s</span>` : ''}
+    <button class="meta-share-btn" onclick="shareBriefing()" title="${t('shareBtn')}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      ${t('shareBtn')}
+    </button>
   `;
+}
+
+async function shareBriefing() {
+  if (!_currentBriefingId) return;
+  const url = `${location.origin}${location.pathname}?briefing=${_currentBriefingId}`;
+  const title = t('shareNative');
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url });
+      return;
+    } catch { /* 취소 시 무시 */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast(t('shareCopied'), 'success');
+  } catch {
+    prompt(t('shareBtn'), url);
+  }
+}
+
+function checkUrlBriefing() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('briefing');
+  if (id) loadBriefingById(id);
 }
 
 function parseBriefingContent(text) {

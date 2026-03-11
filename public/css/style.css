@@ -1126,12 +1126,68 @@ body::before {
   .allocation-row {
     flex-wrap: wrap;
   }
+
+  /* nav-actions 모바일: 줄바꿈 허용, 간격 축소 */
+  .nav-actions {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* lang switcher: 한국어 → KO 등 축약 표시 */
+  .lang-btn[data-lang="ko"]::before { content: 'KO'; }
+  .lang-btn[data-lang="en"]::before { content: 'EN'; }
+  .lang-btn[data-lang="zh"]::before { content: '中'; }
+  .lang-btn[data-lang="ja"]::before { content: '日'; }
+  .lang-btn { font-size: 0; }  /* 원본 텍스트 숨김 */
+  .lang-btn::before { font-size: 0.72rem; }
+
+  /* ticker strip 모바일: 텍스트 크기 축소 */
+  .ticker-item { padding: 0 12px; }
+  .ticker-name { font-size: 0.7rem; }
+  .ticker-price { font-size: 0.75rem; }
+  .ticker-change { font-size: 0.65rem; }
+
+  /* 차트 모달 모바일: 전체화면에 가깝게 */
+  .chart-modal { padding: 0; align-items: flex-end; }
+  .chart-modal-inner { border-radius: 16px 16px 0 0; max-width: 100%; }
+  #chart-container { min-height: 280px; }
 }
 
 @media (max-width: 480px) {
   .cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
+  .lang-btn { font-size: 0.65rem; padding: 2px 4px; }
+  .lang-icon { display: none; }
+  .currency-switch-wrapper { padding: 4px 8px; }
+  .status-indicator { display: none; }
+  .stats-ribbon { gap: 12px; padding: 10px 12px; flex-wrap: wrap; }
+  .stat-divider { display: none; }
+  .chart-modal-inner { border-radius: 12px; }
+  #chart-container { min-height: 260px; }
+  .chart-modal { padding: 10px; }
+}
+
+/* 브리핑 공유 버튼 */
+.meta-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--accent-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  vertical-align: middle;
+}
+.meta-share-btn:hover {
+  background: rgba(99, 102, 241, 0.22);
+  border-color: var(--accent-primary);
 }
 
 /* ===== BRIEFING SECTION STYLING ===== */

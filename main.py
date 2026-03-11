@@ -64,7 +64,7 @@ async def briefing_stream(request: Request, lang: str = "ko"):
             event_type = event.get("type", "message")
             # 프론트엔드가 named event 방식(addEventListener)을 사용하므로 event: 헤더 포함
             if event_type == "complete":
-                asyncio.create_task(stats_tracker.record_api_call())
+                await stats_tracker.record_api_call()
             yield f"event: {event_type}\ndata: {json.dumps(event, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(
