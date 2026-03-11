@@ -183,6 +183,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  flex-shrink: 0;
 }
 
 .brand-icon {
