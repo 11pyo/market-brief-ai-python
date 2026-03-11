@@ -313,6 +313,24 @@ function parseBriefingContent(text) {
     const regex = new RegExp(`(<h2>)(.*(?:${keywords}).*)(<\/h2>)`, 'gi');
     html = html.replace(regex, `$1${icon} $2$3`);
   }
+  // ② 인아티클 광고: PART 3 제목 직전에 삽입
+  const inArticleAd = `
+    <div class="ad-slot ad-slot--in-article">
+      <span class="ad-label">AD</span>
+      <div class="ad-inner">
+        <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 주석 해제
+        <ins class="adsbygoogle" style="display:block;text-align:center" data-ad-client="ca-pub-XXXXXXXX"
+          data-ad-slot="XXXXXXXX" data-ad-layout="in-article" data-ad-format="fluid"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+      </div>
+    </div>`;
+  // PART 3 또는 섹터/Sector 관련 h2 앞에 삽입 (다국어 대응)
+  html = html.replace(
+    /(<h2>[^<]*(?:PART 3|섹터|Sector|板块|セクター)[^<]*<\/h2>)/i,
+    inArticleAd + '$1'
+  );
+
   return html;
 }
 

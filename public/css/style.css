@@ -1134,14 +1134,6 @@ body::before {
     justify-content: flex-end;
   }
 
-  /* lang switcher: 한국어 → KO 등 축약 표시 */
-  .lang-btn[data-lang="ko"]::before { content: 'KO'; }
-  .lang-btn[data-lang="en"]::before { content: 'EN'; }
-  .lang-btn[data-lang="zh"]::before { content: '中'; }
-  .lang-btn[data-lang="ja"]::before { content: '日'; }
-  .lang-btn { font-size: 0; }  /* 원본 텍스트 숨김 */
-  .lang-btn::before { font-size: 0.72rem; }
-
   /* ticker strip 모바일: 텍스트 크기 축소 */
   .ticker-item { padding: 0 12px; }
   .ticker-name { font-size: 0.7rem; }
@@ -1363,3 +1355,84 @@ input:checked + .slider:before { transform: translateX(20px); }
 .stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-value { font-size: 1.25rem; font-weight: 700; color: var(--text-heading); }
 .stat-divider { width: 1px; height: 24px; background: var(--border-subtle); }
+
+/* ===== AD SLOTS ===== */
+.ad-slot {
+  position: relative;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px dashed rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.ad-label {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ad-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: inherit;
+}
+
+/* Header ad — between ticker and stats ribbon */
+.ad-slot--header {
+  margin: 0 0 var(--space-md);
+  min-height: 90px;
+}
+
+/* In-article ad — injected by JS between PART 2 and PART 3 */
+.ad-slot--in-article {
+  margin: var(--space-lg) 0;
+  min-height: 90px;
+}
+
+/* Bottom ad — below briefing card */
+.ad-slot--bottom {
+  margin-top: var(--space-lg);
+  min-height: 90px;
+}
+
+/* Sidebar ad — desktop only */
+.ad-slot--sidebar {
+  min-height: 600px;
+  position: sticky;
+  top: 80px;
+}
+
+/* ===== SIDEBAR LAYOUT ===== */
+.content-with-sidebar {
+  display: block;
+}
+
+.content-main-col {
+  min-width: 0;
+}
+
+.sidebar-ad-col {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .content-with-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .sidebar-ad-col {
+    display: block;
+  }
+}

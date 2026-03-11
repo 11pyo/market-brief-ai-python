@@ -83,12 +83,12 @@
       </div>
       <div class="nav-actions">
         <!-- 언어 선택기 -->
-        <div class="lang-switcher" title="Language / 언어 / 语言 / 言語">
+        <div class="lang-switcher">
           <span class="lang-icon">🌐</span>
-          <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">한국어</button>
-          <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-          <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中文</button>
-          <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日本語</button>
+          <button class="lang-btn" data-lang="ko" onclick="setLang('ko')" title="한국어">KO</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">EN</button>
+          <button class="lang-btn" data-lang="zh" onclick="setLang('zh')" title="中文">中</button>
+          <button class="lang-btn" data-lang="ja" onclick="setLang('ja')" title="日本語">日</button>
         </div>
         <!-- 통화 전환 -->
         <div class="currency-switch-wrapper" title="브리핑 및 대시보드 통화 단위 전환">
@@ -123,6 +123,18 @@
           </div>
         </div>
 
+        <!-- ① 헤더 광고: 티커 바로 아래 -->
+        <div class="ad-slot ad-slot--header">
+          <span class="ad-label">AD</span>
+          <div class="ad-inner">
+            <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 아래 주석 해제
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
+              data-ad-slot="XXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+          </div>
+        </div>
+
         <!-- System Stats Ribbon -->
         <div class="stats-ribbon">
           <div class="stat-item">
@@ -145,6 +157,10 @@
             <span class="stat-value" id="stat-total-api">-</span>
           </div>
         </div>
+
+        <!-- 사이드바 레이아웃 시작 (데스크톱 1024px 이상) -->
+        <div class="content-with-sidebar">
+        <div class="content-main-col">
 
         <!-- Market Data Cards -->
         <section class="market-cards" id="market-cards">
@@ -185,6 +201,37 @@
             </div>
           </div>
         </section>
+
+        <!-- ③ 하단 광고: 브리핑 끝 -->
+        <div class="ad-slot ad-slot--bottom">
+          <span class="ad-label">AD</span>
+          <div class="ad-inner">
+            <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 주석 해제
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
+              data-ad-slot="XXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+          </div>
+        </div>
+
+        </div><!-- /content-main-col -->
+
+        <!-- ④ 사이드바 광고: 데스크톱 전용 sticky -->
+        <aside class="sidebar-ad-col">
+          <div class="ad-slot ad-slot--sidebar">
+            <span class="ad-label">AD</span>
+            <div class="ad-inner">
+              <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 주석 해제
+              <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
+                data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins>
+              <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+              -->
+            </div>
+          </div>
+        </aside>
+
+        </div><!-- /content-with-sidebar -->
+
       </div>
 
       <!-- History Tab -->
