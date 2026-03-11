@@ -49,7 +49,7 @@ async def track_visits(request: Request, call_next):
     ):
         ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
         ip = ip.split(",")[0].strip()
-        asyncio.create_task(stats_tracker.record_visit(ip))
+        await stats_tracker.record_visit(ip)
     return await call_next(request)
 
 

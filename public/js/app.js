@@ -561,11 +561,16 @@ async function loadChart(name, period) {
 
     container.innerHTML = '';
 
+    if (typeof LightweightCharts === 'undefined') {
+      container.innerHTML = `<div class="chart-empty">차트 라이브러리 로드 실패. 페이지를 새로고침해 주세요.</div>`;
+      return;
+    }
+
     chartInstance = LightweightCharts.createChart(container, {
-      width: container.clientWidth,
+      autoSize: true,
       height: 320,
       layout: {
-        background: { color: 'transparent' },
+        background: { color: '#111827' },
         textColor: '#94a3b8',
         fontSize: 12,
       },
@@ -573,15 +578,13 @@ async function loadChart(name, period) {
         vertLines: { color: 'rgba(99, 102, 241, 0.08)' },
         horzLines: { color: 'rgba(99, 102, 241, 0.08)' },
       },
-      crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+      crosshair: { mode: 1 },
       rightPriceScale: { borderColor: 'rgba(99, 102, 241, 0.2)' },
       timeScale: {
         borderColor: 'rgba(99, 102, 241, 0.2)',
         timeVisible: period !== '1mo',
         secondsVisible: false,
       },
-      handleScroll: true,
-      handleScale: true,
     });
 
     const candles = json.data.candles;
@@ -609,11 +612,6 @@ async function loadChart(name, period) {
     }
 
     chartInstance.timeScale().fitContent();
-
-    // 반응형: 컨테이너 크기 변경 시 차트 크기 조정
-    new ResizeObserver(() => {
-      if (chartInstance) chartInstance.applyOptions({ width: container.clientWidth });
-    }).observe(container);
 
   } catch (err) {
     container.innerHTML = `<div class="chart-empty">${t('chartError')}: ${err.message}</div>`;
