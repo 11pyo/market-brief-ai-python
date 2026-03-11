@@ -44,17 +44,17 @@ async def _pipeline(commands: list) -> list:
 
 
 async def record_visit(ip: str) -> None:
-    """방문 IP 기록 (일별 unique + 누적 HyperLogLog)."""
+    """방문 기록 — 오늘/누적 모두 같은 IP 재방문 포함."""
     today = _today()
     if _redis_enabled():
         await _pipeline([
-            ["SADD", f"stats:visitors:{today}", ip],
+            ["INCR", f"stats:visitors:{today}"],
             ["EXPIRE", f"stats:visitors:{today}", 172800],  # 48시간 TTL
-            ["PFADD", "stats:total_visitors", ip],          # 누적 HyperLogLog
+            ["INCR", "stats:total_visitors"],
         ])
     else:
-        daily = _mem["visitors"].setdefault(today, set())
-        daily.add(ip)
+        _mem["visitors"][today] = _mem["visitors"].get(today, 0) + 1
+        _mem["total_visits"] = _mem.get("total_visits", 0) + 1
 
 
 async def record_api_call() -> None:
@@ -76,10 +76,10 @@ async def get_stats() -> dict:
     today = _today()
     if _redis_enabled():
         results = await _pipeline([
-            ["SCARD", f"stats:visitors:{today}"],   # 오늘 방문자 수
-            ["PFCOUNT", "stats:total_visitors"],     # 누적 방문자 수
-            ["GET", f"stats:api:{today}"],           # 오늘 API 호출
-            ["GET", "stats:api:total"],              # 누적 API 호출
+            ["GET", f"stats:visitors:{today}"],   # 오늘 방문 횟수
+            ["GET", "stats:total_visitors"],       # 누적 방문 횟수
+            ["GET", f"stats:api:{today}"],         # 오늘 API 호출
+            ["GET", "stats:api:total"],            # 누적 API 호출
         ])
         if results:
             return {
@@ -89,11 +89,9 @@ async def get_stats() -> dict:
                 "totalApiCalls": int(results[3] or 0),
             }
     # fallback
-    today_v = len(_mem["visitors"].get(today, set()))
-    total_v = sum(len(v) for v in _mem["visitors"].values())
     return {
-        "todayVisitors": today_v,
-        "totalVisitors": total_v,
+        "todayVisitors": _mem["visitors"].get(today, 0),
+        "totalVisitors": _mem.get("total_visits", 0),
         "todayApiCalls": _mem["api"]["daily"].get(today, 0),
         "totalApiCalls": _mem["api"]["total"],
     }
