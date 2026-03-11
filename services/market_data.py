@@ -52,11 +52,23 @@ def _fetch_snapshot_sync() -> dict:
 
 
 async def get_snapshot() -> dict:
-    """비동기 래퍼 — yfinance는 동기 라이브러리이므로 executor에서 실행."""
+    """비동기 래퍼 — 30초 캐시 적용. yfinance는 동기 라이브러리이므로 executor에서 실행."""
+    global _snapshot_cache
+    now = time.time()
+    if _snapshot_cache:
+        cached_at, cached_data = _snapshot_cache
+        if now - cached_at < SNAPSHOT_CACHE_TTL:
+            logger.debug("[MarketData] 스냅샷 캐시 히트")
+            return cached_data
     loop = asyncio.get_event_loop()
     async with asyncio.timeout(45):
-        return await loop.run_in_executor(None, _fetch_snapshot_sync)
+        result = await loop.run_in_executor(None, _fetch_snapshot_sync)
+    _snapshot_cache = (now, result)
+    return result
 
+
+_snapshot_cache: tuple[float, dict] | None = None
+SNAPSHOT_CACHE_TTL = 30  # 30초 — 시장 개장 중 적정, yfinance 호출 50% 절감
 
 _chart_cache: dict[str, tuple[float, list]] = {}
 CHART_CACHE_TTL = 60  # 1분

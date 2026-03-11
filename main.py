@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZIPMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AI 모닝 마켓 브리핑", lifespan=lifespan)
 
+app.add_middleware(GZIPMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -83,7 +85,8 @@ async def get_latest_briefing():
 @app.get("/api/briefing/history")
 async def get_briefing_history(limit: int = 20):
     records = briefing_store.list_briefings(limit=limit)
-    return {"data": [r.model_dump() for r in records]}
+    # content 제외 — 히스토리 목록은 preview만 필요 (70KB → 2KB)
+    return {"data": [r.model_dump(exclude={"content"}) for r in records]}
 
 
 @app.get("/api/briefing/{briefing_id}")
