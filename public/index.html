@@ -371,6 +371,33 @@
 
     <script src="/js/app.js"></script>
     <script>
+      // 콜드스타트 감지 — 서버가 슬립 상태일 때 안내 배너 표시
+      (function() {
+        const banner = document.createElement('div');
+        banner.id = 'coldstart-banner';
+        banner.style.cssText = [
+          'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
+          'background:rgba(15,23,42,0.95)','border:1px solid rgba(99,102,241,0.4)',
+          'border-radius:12px','padding:12px 20px','z-index:9998',
+          'font-size:0.82rem','color:#94a3b8','display:none',
+          'align-items:center','gap:10px','white-space:nowrap',
+          'box-shadow:0 8px 32px rgba(0,0,0,0.4)'
+        ].join(';');
+        banner.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> <span>서버를 깨우는 중입니다... (최대 60초)</span>';
+        document.body.appendChild(banner);
+
+        const start = Date.now();
+        const timer = setTimeout(() => { banner.style.display = 'flex'; }, 3000);
+
+        fetch('/api/status').then(() => {
+          clearTimeout(timer);
+          banner.style.display = 'none';
+        }).catch(() => {
+          // 서버 미응답 — 배너 유지
+        });
+      })();
+    </script>
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js');
