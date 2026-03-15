@@ -124,14 +124,48 @@
         </div>
 
         <!-- ① 헤더 광고: 티커 바로 아래 -->
-        <div class="ad-slot ad-slot--header">
-          <span class="ad-label">AD</span>
-          <div class="ad-inner">
-            <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 아래 주석 해제
-            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
-              data-ad-slot="XXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            -->
+        <div class="ad-slot ad-slot--header" id="pwa-slot-header">
+          <span class="ad-label">APP</span>
+          <div class="ad-inner" style="min-height:0;display:block">
+            <div class="pwa-promo--h" id="pwa-promo-header">
+              <button class="pwa-dismiss" onclick="dismissPwaPromo('header')" aria-label="닫기">✕</button>
+              <!-- Small phone mockup -->
+              <div class="pwa-phone-wrap">
+                <svg width="46" height="80" viewBox="0 0 46 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="1" width="44" height="78" rx="8" fill="#0f172a" stroke="rgba(99,102,241,0.45)" stroke-width="1.5"/>
+                  <rect x="3" y="3" width="40" height="74" rx="6" fill="#111827"/>
+                  <rect x="14" y="5" width="18" height="3.5" rx="1.75" fill="rgba(0,0,0,0.7)"/>
+                  <rect x="3" y="11" width="40" height="13" rx="0" fill="rgba(79,70,229,0.22)"/>
+                  <rect x="7" y="14" width="3" height="7" rx="1" fill="rgba(165,180,252,0.55)"/>
+                  <rect x="12" y="12.5" width="3" height="8.5" rx="1" fill="rgba(165,180,252,0.65)"/>
+                  <rect x="17" y="11.5" width="3" height="9.5" rx="1" fill="rgba(165,180,252,0.75)"/>
+                  <rect x="22" y="11" width="3" height="10" rx="1" fill="rgba(165,180,252,0.85)"/>
+                  <rect x="4" y="27" width="18" height="11" rx="2" fill="#1a2644"/>
+                  <rect x="24" y="27" width="18" height="11" rx="2" fill="#1a2644"/>
+                  <rect x="4" y="27" width="18" height="2.5" rx="1" fill="rgba(34,197,94,0.65)"/>
+                  <rect x="24" y="27" width="18" height="2.5" rx="1" fill="rgba(239,68,68,0.55)"/>
+                  <rect x="4" y="40" width="18" height="11" rx="2" fill="#1a2644"/>
+                  <rect x="24" y="40" width="18" height="11" rx="2" fill="#1a2644"/>
+                  <rect x="4" y="40" width="18" height="2.5" rx="1" fill="rgba(251,191,36,0.55)"/>
+                  <rect x="24" y="40" width="18" height="2.5" rx="1" fill="rgba(99,102,241,0.7)"/>
+                  <rect x="4" y="54" width="38" height="4.5" rx="2" fill="rgba(99,102,241,0.42)"/>
+                  <rect x="4" y="61" width="32" height="3" rx="1.5" fill="rgba(148,163,184,0.22)"/>
+                  <rect x="4" y="66" width="24" height="3" rx="1.5" fill="rgba(148,163,184,0.16)"/>
+                  <rect x="15" y="74" width="16" height="2.5" rx="1.25" fill="rgba(255,255,255,0.18)"/>
+                </svg>
+              </div>
+              <!-- Text -->
+              <div class="pwa-body">
+                <div class="pwa-badge">📱 PWA 모바일 앱</div>
+                <h3 class="pwa-title">홈 화면에서 바로 여는 AI 브리핑</h3>
+                <div class="pwa-features">
+                  <span class="pwa-feat"><span>⚡</span>풀스크린 앱 모드</span>
+                  <span class="pwa-feat"><span>📲</span>홈 화면 아이콘</span>
+                  <span class="pwa-feat"><span>🌅</span>매일 아침 1초 접속</span>
+                </div>
+              </div>
+              <button class="pwa-btn" onclick="triggerPwaInstall()">홈 화면에 추가</button>
+            </div>
           </div>
         </div>
 
@@ -212,14 +246,76 @@
         </section>
 
         <!-- ③ 하단 광고: 브리핑 끝 -->
-        <div class="ad-slot ad-slot--bottom">
-          <span class="ad-label">AD</span>
-          <div class="ad-inner">
-            <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 주석 해제
-            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
-              data-ad-slot="XXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            -->
+        <div class="ad-slot ad-slot--bottom" id="pwa-slot-bottom">
+          <span class="ad-label">APP</span>
+          <div class="ad-inner" style="min-height:0;display:block">
+            <div id="pwa-promo-bottom">
+              <!-- Before / After comparison -->
+              <div class="pwa-promo--compare">
+                <button class="pwa-dismiss" onclick="dismissPwaPromo('bottom')" aria-label="닫기">✕</button>
+                <!-- Before -->
+                <div class="pwa-compare-side pwa-compare-side--before">
+                  <div class="pwa-compare-label">브라우저</div>
+                  <svg width="38" height="68" viewBox="0 0 38 68" fill="none">
+                    <rect x="1" y="1" width="36" height="66" rx="7" fill="#0f172a" stroke="rgba(148,163,184,0.3)" stroke-width="1.5"/>
+                    <rect x="3" y="3" width="32" height="62" rx="5" fill="#1e293b"/>
+                    <rect x="4" y="8" width="30" height="7" rx="2" fill="rgba(148,163,184,0.12)" stroke="rgba(148,163,184,0.15)" stroke-width="0.5"/>
+                    <rect x="6" y="10" width="20" height="3" rx="1.5" fill="rgba(148,163,184,0.25)"/>
+                    <rect x="4" y="18" width="30" height="2.5" rx="1" fill="rgba(148,163,184,0.1)"/>
+                    <rect x="4" y="23" width="30" height="8" rx="1.5" fill="rgba(30,41,59,0.8)"/>
+                    <rect x="4" y="33" width="30" height="8" rx="1.5" fill="rgba(30,41,59,0.8)"/>
+                    <rect x="4" y="43" width="30" height="16" rx="1.5" fill="rgba(30,41,59,0.6)"/>
+                    <rect x="13" y="63" width="12" height="2" rx="1" fill="rgba(255,255,255,0.15)"/>
+                  </svg>
+                  <div class="pwa-compare-steps">
+                    <div class="pwa-compare-step">🌐 앱 찾아 열기</div>
+                    <div class="pwa-compare-step">⌨️ 주소 입력</div>
+                    <div class="pwa-compare-step">⏳ 페이지 로딩</div>
+                    <div class="pwa-compare-step">🔲 주소바·탭 차지</div>
+                  </div>
+                </div>
+                <!-- Arrow -->
+                <div class="pwa-compare-arrow">→</div>
+                <!-- After -->
+                <div class="pwa-compare-side pwa-compare-side--after">
+                  <div class="pwa-compare-label" style="color:#a5b4fc">앱 모드</div>
+                  <div class="pwa-phone-wrap pwa-phone-wrap--glow">
+                    <svg width="38" height="68" viewBox="0 0 38 68" fill="none">
+                      <rect x="1" y="1" width="36" height="66" rx="7" fill="#0f172a" stroke="rgba(99,102,241,0.5)" stroke-width="1.5"/>
+                      <rect x="3" y="3" width="32" height="62" rx="5" fill="#111827"/>
+                      <rect x="11" y="5" width="16" height="3" rx="1.5" fill="rgba(0,0,0,0.7)"/>
+                      <rect x="3" y="10" width="32" height="10" rx="0" fill="rgba(79,70,229,0.22)"/>
+                      <rect x="5" y="12" width="2.5" height="6" rx="1" fill="rgba(165,180,252,0.6)"/>
+                      <rect x="9" y="11" width="2.5" height="7.5" rx="1" fill="rgba(165,180,252,0.7)"/>
+                      <rect x="13" y="10" width="2.5" height="8.5" rx="1" fill="rgba(165,180,252,0.8)"/>
+                      <rect x="4" y="23" width="14" height="9" rx="2" fill="#1a2644"/>
+                      <rect x="20" y="23" width="14" height="9" rx="2" fill="#1a2644"/>
+                      <rect x="4" y="23" width="14" height="2" rx="1" fill="rgba(34,197,94,0.7)"/>
+                      <rect x="20" y="23" width="14" height="2" rx="1" fill="rgba(239,68,68,0.6)"/>
+                      <rect x="4" y="34" width="14" height="9" rx="2" fill="#1a2644"/>
+                      <rect x="20" y="34" width="14" height="9" rx="2" fill="#1a2644"/>
+                      <rect x="4" y="34" width="14" height="2" rx="1" fill="rgba(251,191,36,0.6)"/>
+                      <rect x="20" y="34" width="14" height="2" rx="1" fill="rgba(99,102,241,0.7)"/>
+                      <rect x="4" y="46" width="30" height="3.5" rx="1.5" fill="rgba(99,102,241,0.42)"/>
+                      <rect x="4" y="52" width="26" height="2.5" rx="1" fill="rgba(148,163,184,0.2)"/>
+                      <rect x="4" y="57" width="20" height="2.5" rx="1" fill="rgba(148,163,184,0.15)"/>
+                      <rect x="12" y="63" width="14" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
+                    </svg>
+                  </div>
+                  <div class="pwa-compare-steps">
+                    <div class="pwa-compare-step after">📲 홈 화면 탭 1번</div>
+                    <div class="pwa-compare-step after">⚡ 즉시 실행</div>
+                    <div class="pwa-compare-step after">🖥 풀스크린 몰입</div>
+                    <div class="pwa-compare-step after">✨ 앱처럼 부드럽게</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Bottom CTA row -->
+              <div class="pwa-compare-bottom">
+                <p class="pwa-compare-pitch">설치 없이 홈 화면 추가만으로<br>앱과 완전히 같은 경험을 드립니다.</p>
+                <button class="pwa-btn" onclick="triggerPwaInstall()" style="white-space:nowrap">📲 지금 추가하기</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -227,14 +323,60 @@
 
         <!-- ④ 사이드바 광고: 데스크톱 전용 sticky -->
         <aside class="sidebar-ad-col">
-          <div class="ad-slot ad-slot--sidebar">
-            <span class="ad-label">AD</span>
-            <div class="ad-inner">
-              <!-- Google AdSense: data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" 입력 후 주석 해제
-              <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX"
-                data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins>
-              <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-              -->
+          <div class="ad-slot ad-slot--sidebar" id="pwa-slot-sidebar">
+            <span class="ad-label">APP</span>
+            <div class="ad-inner" style="min-height:0;display:block;padding:0">
+              <div class="pwa-promo--v" id="pwa-promo-sidebar">
+                <button class="pwa-dismiss" onclick="dismissPwaPromo('sidebar')" aria-label="닫기">✕</button>
+                <!-- Large phone mockup -->
+                <div class="pwa-phone-wrap pwa-phone-wrap--glow">
+                  <svg width="96" height="172" viewBox="0 0 96 172" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="92" height="168" rx="18" fill="#0f172a" stroke="rgba(99,102,241,0.5)" stroke-width="2"/>
+                    <rect x="5" y="5" width="86" height="162" rx="15" fill="#111827"/>
+                    <rect x="32" y="10" width="32" height="6" rx="3" fill="rgba(0,0,0,0.75)"/>
+                    <!-- Nav bar with logo -->
+                    <rect x="5" y="22" width="86" height="24" rx="0" fill="rgba(79,70,229,0.2)"/>
+                    <rect x="11" y="27" width="4" height="11" rx="1.5" fill="rgba(165,180,252,0.5)"/>
+                    <rect x="17" y="25" width="4" height="13" rx="1.5" fill="rgba(165,180,252,0.6)"/>
+                    <rect x="23" y="23" width="4" height="15" rx="1.5" fill="rgba(165,180,252,0.72)"/>
+                    <rect x="29" y="22" width="4" height="17" rx="1.5" fill="rgba(165,180,252,0.85)"/>
+                    <!-- Cards row 1 -->
+                    <rect x="6" y="51" width="40" height="25" rx="4" fill="#1a2644" stroke="rgba(99,102,241,0.18)" stroke-width="0.5"/>
+                    <rect x="50" y="51" width="40" height="25" rx="4" fill="#1a2644" stroke="rgba(99,102,241,0.18)" stroke-width="0.5"/>
+                    <rect x="6" y="51" width="40" height="3.5" rx="2" fill="rgba(34,197,94,0.7)"/>
+                    <rect x="50" y="51" width="40" height="3.5" rx="2" fill="rgba(239,68,68,0.6)"/>
+                    <!-- Sparklines row 1 -->
+                    <polyline points="9,71 15,67 21,69 27,64 33,66 43,62" stroke="rgba(34,197,94,0.55)" stroke-width="1.2" fill="none"/>
+                    <polyline points="53,67 59,64 65,68 71,73 77,70 87,74" stroke="rgba(239,68,68,0.55)" stroke-width="1.2" fill="none"/>
+                    <!-- Cards row 2 -->
+                    <rect x="6" y="80" width="40" height="25" rx="4" fill="#1a2644" stroke="rgba(99,102,241,0.18)" stroke-width="0.5"/>
+                    <rect x="50" y="80" width="40" height="25" rx="4" fill="#1a2644" stroke="rgba(99,102,241,0.18)" stroke-width="0.5"/>
+                    <rect x="6" y="80" width="40" height="3.5" rx="2" fill="rgba(251,191,36,0.6)"/>
+                    <rect x="50" y="80" width="40" height="3.5" rx="2" fill="rgba(99,102,241,0.75)"/>
+                    <polyline points="9,100 15,96 21,99 27,94 33,97 43,93" stroke="rgba(251,191,36,0.5)" stroke-width="1.2" fill="none"/>
+                    <polyline points="53,96 59,100 65,97 71,93 77,95 87,91" stroke="rgba(99,102,241,0.55)" stroke-width="1.2" fill="none"/>
+                    <!-- Briefing section -->
+                    <rect x="6" y="110" width="56" height="5" rx="2" fill="rgba(99,102,241,0.5)"/>
+                    <rect x="64" y="110" width="26" height="5" rx="2" fill="rgba(99,102,241,0.2)"/>
+                    <rect x="6" y="120" width="84" height="5" rx="2" fill="rgba(148,163,184,0.28)"/>
+                    <rect x="6" y="129" width="76" height="5" rx="2" fill="rgba(148,163,184,0.22)"/>
+                    <rect x="6" y="138" width="60" height="5" rx="2" fill="rgba(148,163,184,0.17)"/>
+                    <rect x="6" y="147" width="44" height="5" rx="2" fill="rgba(148,163,184,0.12)"/>
+                    <!-- Home indicator -->
+                    <rect x="35" y="163" width="26" height="3" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+                  </svg>
+                </div>
+                <div class="pwa-badge">📱 PWA 모바일 앱</div>
+                <h3 class="pwa-title">앱처럼 쓰는<br>AI 모닝 브리핑</h3>
+                <div class="pwa-feat-list">
+                  <div class="pwa-feat-row"><span>📲</span><span>홈 화면 아이콘으로 1초 접속</span></div>
+                  <div class="pwa-feat-row"><span>⚡</span><span>풀스크린 — 브라우저 없이 앱처럼</span></div>
+                  <div class="pwa-feat-row"><span>🌅</span><span>매일 아침 브리핑 바로 확인</span></div>
+                  <div class="pwa-feat-row"><span>🚀</span><span>캐시 저장으로 빠른 로딩</span></div>
+                </div>
+                <button class="pwa-btn pwa-btn--full" onclick="triggerPwaInstall()">📲 홈 화면에 추가하기</button>
+                <p class="pwa-hint">무료 · 앱 설치 불필요<br>Android · iOS 모두 지원</p>
+              </div>
             </div>
           </div>
         </aside>
