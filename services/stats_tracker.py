@@ -21,7 +21,7 @@ _mem = {"visitors": {}, "api": {"daily": {}, "total": 0}}
 
 # 쿨다운: IP별 마지막 방문 시각 (in-memory fallback용)
 _visit_cooldown: dict[str, float] = {}
-_COOLDOWN_SECONDS = 600  # 10분
+_COOLDOWN_SECONDS = 3600  # 1시간
 
 
 def _today() -> str:
