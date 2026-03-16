@@ -22,8 +22,8 @@ const LANGS = {
     // 통계 리본
     statTodayVisitors: '오늘 방문자',
     statTotalVisitors: '누적 방문자',
-    statTodayApi: '오늘 API 호출',
-    statTotalApi: '누적 API 호출',
+    statTodayApi: '오늘 브리핑 생성',
+    statTotalApi: '누적 브리핑 생성',
     // 섹션 헤더
     sectionMarket: '📊 실시간 시장 데이터',
     sectionBriefing: '🧠 AI 모닝 브리핑',
