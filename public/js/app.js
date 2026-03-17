@@ -150,6 +150,7 @@ async function loadMarketData() {
       rawMarketData = json.data;
       renderMarketCards(rawMarketData);
       renderTickerStrip(rawMarketData);
+      renderFearGreed(rawMarketData);
     }
   } catch (err) {
     console.error('Market data load failed:', err);
@@ -752,6 +753,121 @@ function showToast(message, type = 'info') {
   toast.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
+}
+
+// ===== FEAR & GREED INDEX =====
+function renderFearGreed(data) {
+  const section = document.getElementById('fg-section');
+  const svgEl   = document.getElementById('fg-svg');
+  if (!section || !svgEl || !data) return;
+
+  const fg = _computeFearGreed(data);
+  if (!fg) return;
+
+  section.style.display = '';
+  svgEl.innerHTML = _buildGaugeSVG(fg.score, fg.color);
+
+  document.getElementById('fg-score-num').textContent   = fg.score;
+  document.getElementById('fg-score-num').style.color   = fg.color;
+  document.getElementById('fg-score-label').textContent = fg.label;
+  document.getElementById('fg-score-label').style.color = fg.color;
+
+  const badge = document.getElementById('fg-badge');
+  badge.textContent = fg.label;
+  badge.style.color       = fg.color;
+  badge.style.background  = fg.color + '18';
+  badge.style.borderColor = fg.color + '50';
+
+  document.getElementById('fg-components').innerHTML =
+    `<div class="fg-comp-row">
+      <span class="fg-comp-label">VIX</span>
+      <div class="fg-comp-bar"><div style="width:${fg.vixScore}%;background:${fg.color}"></div></div>
+      <span class="fg-comp-val">${fg.vixScore}</span>
+    </div>
+    <div class="fg-comp-row">
+      <span class="fg-comp-label">S&P 모멘텀</span>
+      <div class="fg-comp-bar"><div style="width:${fg.spScore}%;background:${fg.color}"></div></div>
+      <span class="fg-comp-val">${fg.spScore}</span>
+    </div>
+    <div class="fg-comp-row">
+      <span class="fg-comp-label">금 안전자산</span>
+      <div class="fg-comp-bar"><div style="width:${fg.goldScore}%;background:${fg.color}"></div></div>
+      <span class="fg-comp-val">${fg.goldScore}</span>
+    </div>`;
+}
+
+function _computeFearGreed(data) {
+  const vix       = data['VIX']?.price;
+  const spChange  = data['S&P 500']?.changePercent;
+  const goldChange = data['Gold']?.changePercent;
+  if (vix == null || spChange == null) return null;
+
+  // VIX component (40%): VIX 10→100점, VIX 40→0점
+  const vixScore  = Math.round(Math.max(0, Math.min(100, (40 - vix) / 30 * 100)));
+  // S&P 하루 모멘텀 (35%): -3%→0점, +3%→100점
+  const spScore   = Math.round(Math.max(0, Math.min(100, (spChange + 3) / 6 * 100)));
+  // 금 안전자산 수요 (25%): 금↑ + SP↓ = 공포 → 낮은 점수
+  const div       = goldChange != null ? goldChange - spChange : 0;
+  const goldScore = Math.round(Math.max(0, Math.min(100, 50 - div * 8)));
+
+  const score = Math.round(0.40 * vixScore + 0.35 * spScore + 0.25 * goldScore);
+
+  const zones = [
+    { max: 20,  label: '극도의 공포', color: '#ef4444' },
+    { max: 40,  label: '공포',        color: '#f97316' },
+    { max: 60,  label: '중립',        color: '#eab308' },
+    { max: 80,  label: '탐욕',        color: '#84cc16' },
+    { max: 100, label: '극도의 탐욕', color: '#22c55e' },
+  ];
+  const zone = zones.find(z => score <= z.max) || zones[4];
+  return { score, label: zone.label, color: zone.color, vixScore, spScore, goldScore };
+}
+
+function _buildGaugeSVG(score, activeColor) {
+  const cx = 100, cy = 100, r = 74, sw = 14;
+  const toRad = d => d * Math.PI / 180;
+  const pt = (s, rad = r) => ({
+    x: cx + rad * Math.cos(toRad(180 - s * 1.8)),
+    y: cy - rad * Math.sin(toRad(180 - s * 1.8)),
+  });
+
+  const zoneColors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
+  let html = '';
+
+  // 배경 5구간 아크
+  for (let i = 0; i < 5; i++) {
+    const s1 = i * 20 + 1.2, s2 = (i + 1) * 20 - 1.2;
+    const p1 = pt(s1), p2 = pt(s2);
+    html += `<path d="M${p1.x.toFixed(2)},${p1.y.toFixed(2)} A${r},${r} 0 0,0 ${p2.x.toFixed(2)},${p2.y.toFixed(2)}" `
+          + `stroke="${zoneColors[i]}" stroke-width="${sw}" fill="none" stroke-linecap="round" opacity="0.32"/>`;
+  }
+
+  // 현재 점수까지 밝게 강조 (0 ~ score)
+  if (score >= 2) {
+    const p0 = pt(0.5), pS = pt(Math.min(score, 99.5));
+    const large = score > 50 ? 1 : 0;
+    html += `<path d="M${p0.x.toFixed(2)},${p0.y.toFixed(2)} A${r},${r} 0 ${large},0 ${pS.x.toFixed(2)},${pS.y.toFixed(2)}" `
+          + `stroke="${activeColor}" stroke-width="${sw - 6}" fill="none" stroke-linecap="round" opacity="0.55"/>`;
+  }
+
+  // 바늘
+  const np = pt(score, r - sw / 2 - 1);
+  html += `<line x1="${cx}" y1="${cy}" x2="${np.x.toFixed(2)}" y2="${np.y.toFixed(2)}" `
+        + `stroke="white" stroke-width="2.5" stroke-linecap="round"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="4" fill="white"/>`;
+
+  // 점수 텍스트 (중앙 아래)
+  html += `<text x="${cx}" y="${cy + 22}" text-anchor="middle" fill="white" `
+        + `font-size="20" font-weight="700" font-family="Inter,sans-serif">${score}</text>`;
+
+  // FEAR / GREED 레이블
+  const lp = pt(1); const rp = pt(99);
+  html += `<text x="${(lp.x - 2).toFixed(0)}" y="${cy + 15}" text-anchor="middle" `
+        + `fill="#ef4444" font-size="8.5" font-family="Inter,sans-serif">FEAR</text>`;
+  html += `<text x="${(rp.x + 2).toFixed(0)}" y="${cy + 15}" text-anchor="middle" `
+        + `fill="#22c55e" font-size="8.5" font-family="Inter,sans-serif">GREED</text>`;
+
+  return html;
 }
 
 // ===== CALENDAR =====
