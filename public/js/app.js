@@ -123,7 +123,7 @@ function switchTab(tabName) {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadCalendar(), loadSectors()]);
+  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadSectors()]);
 }
 
 // ===== SYSTEM STATS =====
