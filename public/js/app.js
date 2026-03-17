@@ -349,7 +349,7 @@ function renderBriefing(briefing) {
   const locale = t('metaDateLocale');
   const date = new Date(briefing.generatedAt);
   const dateStr = date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-  const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
   const newsLabel = typeof t('metaNews') === 'function' ? t('metaNews')(briefing.newsCount || '?') : `📰 ${briefing.newsCount || '?'}`;
 
   meta.innerHTML = `
@@ -581,7 +581,7 @@ async function loadHistory() {
     list.innerHTML = json.data.map(item => {
       const date = new Date(item.generatedAt);
       const dateStr = date.toLocaleDateString(locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
-      const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+      const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
       return `
         <div class="history-item" onclick="loadBriefingById('${item.id}')">
           <span class="history-date">${dateStr} ${timeStr}</span>
