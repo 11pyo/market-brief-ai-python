@@ -132,6 +132,17 @@ async def save_portfolio_endpoint(portfolio: Portfolio, client_id: str = ""):
     return {"data": portfolio.model_dump(), "message": "포트폴리오가 저장되었습니다."}
 
 
+# ===== 섹터 ETF =====
+@app.get("/api/market/sectors")
+async def get_sector_snapshot():
+    try:
+        data = await market_data.get_sector_snapshot()
+        return {"data": data}
+    except Exception as e:
+        logger.error(f"[Sectors] 오류: {e}")
+        return JSONResponse({"data": {}}, status_code=500)
+
+
 # ===== 캘린더 =====
 @app.get("/api/calendar")
 async def get_calendar():

@@ -18,6 +18,7 @@ const API = {
   marketSnapshot: '/api/market/snapshot',
   marketChart: (name, period) => `/api/market/chart?name=${encodeURIComponent(name)}&period=${period}`,
   portfolio: () => `/api/portfolio?client_id=${getClientId()}`,
+  sectors: '/api/market/sectors',
   settings: '/api/settings',
   status: '/api/status',
   stats: '/api/stats',
@@ -122,7 +123,7 @@ function switchTab(tabName) {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadCalendar()]);
+  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadCalendar(), loadSectors()]);
 }
 
 // ===== SYSTEM STATS =====
@@ -151,6 +152,11 @@ async function loadMarketData() {
       renderMarketCards(rawMarketData);
       renderTickerStrip(rawMarketData);
       renderFearGreed(rawMarketData);
+      const updEl = document.getElementById('market-updated');
+      if (updEl) {
+        const now = new Date();
+        updEl.textContent = `기준 ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+      }
     }
   } catch (err) {
     console.error('Market data load failed:', err);
@@ -241,8 +247,41 @@ function renderFavoritesRow() {
   for (const name of favNames) {
     const info = data[name];
     if (!info) continue;
-    favGrid.appendChild(_makeMarketCard(name, info));
+    const card = _makeMarketCard(name, info);
+    favGrid.appendChild(card);
+    // 스파크라인 비동기 추가
+    _attachSparkline(card, name);
   }
+}
+
+async function _attachSparkline(cardEl, name) {
+  try {
+    const res = await fetch(API.marketChart(name, '1d'));
+    const json = await res.json();
+    const candles = json.data?.candles;
+    if (!candles || candles.length < 3) return;
+    const sparkEl = document.createElement('div');
+    sparkEl.className = 'card-sparkline';
+    sparkEl.innerHTML = _buildSparklineSVG(candles);
+    cardEl.appendChild(sparkEl);
+  } catch (_) {}
+}
+
+function _buildSparklineSVG(candles) {
+  const prices = candles.map(c => c.close);
+  const min = Math.min(...prices), max = Math.max(...prices);
+  const range = max - min || 1;
+  const W = 110, H = 28;
+  const pts = prices.map((p, i) => {
+    const x = (i / (prices.length - 1)) * W;
+    const y = H - ((p - min) / range) * (H - 2) - 1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const isUp = prices[prices.length - 1] >= prices[0];
+  const color = isUp ? '#22c55e' : '#ef4444';
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="none">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
 }
 
 function renderTickerStrip(rawData) {
@@ -393,14 +432,18 @@ function parseBriefingContent(text) {
   html = html.replace(/<p>\s*(<blockquote>)/g, '$1');
   html = html.replace(/(<\/blockquote>)\s*<\/p>/g, '$1');
 
-  // 확률 하이라이트 (다국어 키워드)
+  // PART 2 확률 바 (📈/📉/➡️ XX% 형식)
   html = html.replace(
-    /(?:상승|Bullish|牛市|強気)\s*\(?\s*(?:Bullish)?\s*\)?\s*(?:확률|Probability|概率|確率)\s*[:：]\s*(\d+)%/gi,
-    (_, pct) => `<strong style="color:var(--green)">Bullish: ${pct}%</strong>`
+    /(📈\s*(?:상승|Bullish|Hausse|上昇)\s*[:：]\s*)(\d+)%/gi,
+    (_, label, pct) => `${label}<span class="prob-bar-wrap up"><span class="prob-bar-fill" style="width:${pct}%"></span></span><strong style="color:var(--green)">${pct}%</strong>`
   );
   html = html.replace(
-    /(?:하락|Bearish|熊市|弱気)\s*\(?\s*(?:Bearish)?\s*\)?\s*(?:확률|Probability|概率|確率)\s*[:：]\s*(\d+)%/gi,
-    (_, pct) => `<strong style="color:var(--red)">Bearish: ${pct}%</strong>`
+    /(📉\s*(?:하락|Bearish|Baisse|下落)\s*[:：]\s*)(\d+)%/gi,
+    (_, label, pct) => `${label}<span class="prob-bar-wrap down"><span class="prob-bar-fill" style="width:${pct}%"></span></span><strong style="color:var(--red)">${pct}%</strong>`
+  );
+  html = html.replace(
+    /(➡️\s*(?:횡보|Neutral|Neutre|中立)\s*[:：]\s*)(\d+)%/gi,
+    (_, label, pct) => `${label}<span class="prob-bar-wrap neutral"><span class="prob-bar-fill" style="width:${pct}%"></span></span><strong style="color:var(--text-secondary)">${pct}%</strong>`
   );
 
   // 섹션 아이콘 (언어 무관 키워드 + i18n 키워드)
@@ -753,6 +796,32 @@ function showToast(message, type = 'info') {
   toast.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
+}
+
+// ===== SECTOR ETF =====
+async function loadSectors() {
+  const section = document.getElementById('sector-section');
+  const grid    = document.getElementById('sector-grid');
+  if (!section || !grid) return;
+  try {
+    const res  = await fetch(API.sectors);
+    const json = await res.json();
+    if (!json.data || !Object.keys(json.data).length) return;
+    section.style.display = '';
+    const sorted = Object.entries(json.data).sort((a, b) => b[1].changePercent - a[1].changePercent);
+    grid.innerHTML = sorted.map(([name, info]) => {
+      const pct = info.changePercent;
+      const dir = pct >= 0 ? 'up' : 'down';
+      const sign = pct >= 0 ? '+' : '';
+      return `<div class="sector-chip ${dir}">
+        <span class="sector-sym">${info.symbol}</span>
+        <span class="sector-name">${name}</span>
+        <span class="sector-pct">${sign}${pct.toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    console.error('Sector load failed:', err);
+  }
 }
 
 // ===== FEAR & GREED INDEX =====

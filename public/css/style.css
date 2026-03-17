@@ -1925,6 +1925,56 @@ input:checked + .slider:before { transform: translateX(20px); }
   .pwa-how-inline { font-size: 0.66rem; }
 }
 
+/* ===== MARKET UPDATED TIMESTAMP ===== */
+.market-updated {
+  font-size: 0.72rem; color: var(--text-muted);
+  margin-left: auto; margin-right: 8px;
+  white-space: nowrap;
+}
+
+/* ===== SECTOR ETF ===== */
+.sector-section { margin-bottom: 16px; }
+.sector-header { margin-bottom: 8px; }
+.sector-title { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+.sector-grid {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.sector-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 20px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  font-size: 0.75rem; cursor: default;
+}
+.sector-chip.up  { border-color: rgba(34,197,94,0.25); }
+.sector-chip.down { border-color: rgba(239,68,68,0.25); }
+.sector-sym  { font-weight: 700; font-family: var(--font-mono); font-size: 0.72rem; }
+.sector-name { color: var(--text-muted); font-size: 0.7rem; }
+.sector-pct  { font-weight: 600; }
+.sector-chip.up  .sector-pct { color: var(--green); }
+.sector-chip.down .sector-pct { color: var(--red); }
+
+/* ===== SPARKLINE ===== */
+.card-sparkline {
+  padding: 4px 12px 8px;
+  opacity: 0.85;
+}
+.card-sparkline svg { display: block; width: 100%; height: 28px; }
+
+/* ===== PART 2 PROBABILITY BARS ===== */
+.prob-bar-wrap {
+  display: inline-block; vertical-align: middle;
+  width: 80px; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.08); margin: 0 5px;
+  overflow: hidden;
+}
+.prob-bar-wrap.up   { background: rgba(34,197,94,0.15); }
+.prob-bar-wrap.down { background: rgba(239,68,68,0.15); }
+.prob-bar-wrap.neutral { background: rgba(148,163,184,0.15); }
+.prob-bar-fill { display: block; height: 100%; border-radius: 3px; }
+.prob-bar-wrap.up   .prob-bar-fill { background: var(--green); }
+.prob-bar-wrap.down .prob-bar-fill { background: var(--red); }
+.prob-bar-wrap.neutral .prob-bar-fill { background: var(--text-secondary); }
+
 /* ===== FEAR & GREED ===== */
 .fg-section { margin-bottom: 20px; }
 .fg-card {

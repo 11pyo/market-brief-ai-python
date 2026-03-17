@@ -199,6 +199,7 @@
         <section class="market-cards" id="market-cards">
           <div class="section-header">
             <h2 data-i18n="sectionMarket">📊 실시간 시장 데이터</h2>
+            <span class="market-updated" id="market-updated"></span>
             <button class="btn-refresh" id="btn-refresh-market">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="23 4 23 10 17 10" />
@@ -215,6 +216,14 @@
               <div class="favorites-grid" id="favorites-grid"></div>
             </div>
           </div>
+        </section>
+
+        <!-- Sector ETF -->
+        <section class="sector-section" id="sector-section" style="display:none">
+          <div class="sector-header">
+            <span class="sector-title">섹터 ETF 등락률</span>
+          </div>
+          <div class="sector-grid" id="sector-grid"></div>
         </section>
 
         <!-- Fear & Greed Index -->

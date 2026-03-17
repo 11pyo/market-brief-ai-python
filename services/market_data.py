@@ -70,6 +70,60 @@ async def get_snapshot() -> dict:
 _snapshot_cache: tuple[float, dict] | None = None
 SNAPSHOT_CACHE_TTL = 30  # 30초 — 시장 개장 중 적정, yfinance 호출 50% 절감
 
+# ===== 섹터 ETF =====
+SECTOR_SYMBOLS: dict[str, str] = {
+    "Technology":          "XLK",
+    "Financials":          "XLF",
+    "Energy":              "XLE",
+    "Healthcare":          "XLV",
+    "Industrials":         "XLI",
+    "Cons. Discretionary": "XLY",
+    "Cons. Staples":       "XLP",
+    "Communication":       "XLC",
+    "Materials":           "XLB",
+    "Real Estate":         "XLRE",
+}
+
+_sector_cache: tuple[float, dict] | None = None
+SECTOR_CACHE_TTL = 60  # 1분
+
+
+def _fetch_sector_sync() -> dict:
+    symbols_str = " ".join(SECTOR_SYMBOLS.values())
+    tickers = yf.Tickers(symbols_str)
+    results = {}
+    for name, symbol in SECTOR_SYMBOLS.items():
+        try:
+            info = tickers.tickers[symbol].fast_info
+            price = info.last_price
+            prev_close = info.previous_close
+            if price is None or prev_close is None:
+                raise ValueError("가격 없음")
+            change = price - prev_close
+            change_pct = (change / prev_close) * 100
+            results[name] = {
+                "symbol": symbol,
+                "price": round(price, 2),
+                "changePercent": round(change_pct, 2),
+            }
+        except Exception as e:
+            logger.warning(f"[MarketData] 섹터 {name} ({symbol}) 조회 실패: {e}")
+    return results
+
+
+async def get_sector_snapshot() -> dict:
+    global _sector_cache
+    now = time.time()
+    if _sector_cache:
+        cached_at, cached_data = _sector_cache
+        if now - cached_at < SECTOR_CACHE_TTL:
+            return cached_data
+    loop = asyncio.get_event_loop()
+    async with asyncio.timeout(45):
+        result = await loop.run_in_executor(None, _fetch_sector_sync)
+    _sector_cache = (now, result)
+    return result
+
 _chart_cache: dict[str, tuple[float, list]] = {}
 CHART_CACHE_TTL = 60  # 1분
 
