@@ -1646,10 +1646,77 @@ input:checked + .slider:before { transform: translateX(20px); }
   min-height: inherit;
 }
 
-/* Header ad — between ticker and stats ribbon */
-.ad-slot--header {
+/* ===== PWA INSTALL BAR ===== */
+.pwa-install-bar {
   margin: 0 0 var(--space-md);
-  min-height: 90px;
+  background: linear-gradient(90deg, rgba(99,102,241,0.10) 0%, rgba(139,92,246,0.08) 50%, rgba(99,102,241,0.10) 100%);
+  border: 1px solid rgba(99,102,241,0.18);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pwa-install-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.pwa-install-icon {
+  display: flex;
+  align-items: center;
+  color: #a5b4fc;
+  flex-shrink: 0;
+}
+
+.pwa-install-headline {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #c4b5fd;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.pwa-install-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(99,102,241,0.3);
+  flex-shrink: 0;
+}
+
+.pwa-install-step {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pwa-install-step strong {
+  color: var(--text-secondary);
+}
+
+.pwa-install-os {
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.pwa-install-sep {
+  color: rgba(148,163,184,0.3);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .pwa-install-inner { gap: 6px; padding: 8px 14px; }
+  .pwa-install-divider { display: none; }
+  .pwa-install-headline { font-size: 0.72rem; }
+  .pwa-install-step { font-size: 0.65rem; }
 }
 
 /* In-article ad — injected by JS between PART 2 and PART 3 */
