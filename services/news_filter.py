@@ -20,6 +20,13 @@ HIGH_PRIORITY = [
     "dollar", "yen", "euro", "yuan", "currency",
     "crash", "selloff", "rally", "surge", "plunge",
     "stimulus", "quantitative", "tightening", "easing",
+    # 대통령·정치 발표
+    "trump", "president", "white house", "executive order", "oval office",
+    "powell", "fed chair", "yellen", "waller", "goolsbee", "bessent",
+    "press conference", "press secretary",
+    # 관세·무역 정책
+    "trade deal", "export control", "import ban", "import tariff",
+    "retaliatory", "reciprocal tariff",
 ]
 
 MEDIUM_PRIORITY = [
@@ -158,11 +165,40 @@ def filter_news(news_items: list[dict]) -> list[dict]:
 
 
 def format_for_llm(news_items: list[dict]) -> str:
-    text = "=== TODAY'S KEY FINANCIAL & GEOPOLITICAL NEWS ===\n\n"
+    import datetime as _dt
+    now = time.time()
+
+    # ⚡ BREAKING 섹션: 6h 이내 + 고점수 + 일반/환율 카테고리
+    breaking = [
+        x for x in news_items
+        if (now - (x.get("datetime") or 0)) < 6 * 3600
+        and x.get("_score", 0) >= 6
+        and x.get("_category", "general") in ("general", "forex")
+    ]
+    breaking.sort(key=lambda x: x["_score"], reverse=True)
+    breaking = breaking[:3]
+
+    text = ""
+    if breaking:
+        text += "⚡ BREAKING: OVERNIGHT US MARKET-MOVING DEVELOPMENTS (last 6h)\n"
+        text += "(INSTRUCTION TO LLM: These items MUST be addressed first in PART 1 — name the specific person and their action)\n\n"
+        for item in breaking:
+            dt = item.get("datetime")
+            time_str = (
+                _dt.datetime.utcfromtimestamp(dt).strftime("%H:%M UTC")
+                if dt else "N/A"
+            )
+            text += f"▶ [{time_str}] {item.get('headline', '')}\n"
+            summary = item.get("summary", "")
+            if summary:
+                text += f"   {summary[:200]}\n"
+        text += "\n---\n\n"
+
+    text += "=== TODAY'S KEY FINANCIAL & GEOPOLITICAL NEWS ===\n\n"
     for idx, item in enumerate(news_items, 1):
         dt = item.get("datetime")
         time_str = (
-            __import__("datetime").datetime.utcfromtimestamp(dt).strftime("%Y-%m-%d %H:%M")
+            _dt.datetime.utcfromtimestamp(dt).strftime("%Y-%m-%d %H:%M")
             if dt else "N/A"
         )
         text += f"[{idx}] {item.get('headline', 'No headline')}\n"

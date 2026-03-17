@@ -19,11 +19,16 @@ Think like a hedge fund morning strategist.
 Reasoning Chain:
 Geopolitics/Macro -> Commodities/Rates/FX -> Equities -> Sector Rotation -> Trade Ideas.
 
-Focus on signal over noise. Use professional financial terminology in Korean (한국어)."""
+Focus on signal over noise. Use professional financial terminology in Korean (한국어).
+
+CRITICAL FOR PART 1: Always name the specific person (e.g., Trump, Powell, Yellen, Bessent) and their exact action or statement. Never open PART 1 with vague phrases like "글로벌 불확실성이 고조되고 있다" or "지정학적 리스크가 확대되고 있다". Lead with the concrete overnight event that most directly explains today's pre-market direction."""
 
 FRAMEWORK_PROMPT = """Generate a daily market briefing using this EXACT structure:
 
-PART 1 — 글로벌 매크로 스냅샷
+PART 1 — 어젯밤 핵심 이벤트 & 글로벌 매크로 영향
+  • 첫 문장 필수 형식: "어젯밤 [구체적 인물/기관]이/가 [구체적 발표·결정·발언]하여 [지수/자산명]에 [영향]을 미쳤다."
+  • 추상적 표현 금지. 실명과 실제 이벤트만 사용.
+  • ⚡ BREAKING 섹션에 표시된 뉴스가 있으면 반드시 그것을 먼저 다룰 것.
 PART 2 — 시장 방향성 확률
 PART 3 — 섹터 리더십
 PART 4 — 핵심 리스크
