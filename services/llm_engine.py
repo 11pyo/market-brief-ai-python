@@ -25,10 +25,12 @@ CRITICAL FOR PART 1: Always name the specific person (e.g., Trump, Powell, Yelle
 
 FRAMEWORK_PROMPT = """Generate a daily market briefing using this EXACT structure:
 
-PART 1 — 어젯밤 핵심 이벤트 & 글로벌 매크로 영향
-  • 첫 문장 필수 형식: "어젯밤 [구체적 인물/기관]이/가 [구체적 발표·결정·발언]하여 [지수/자산명]에 [영향]을 미쳤다."
-  • 추상적 표현 금지. 실명과 실제 이벤트만 사용.
-  • ⚡ BREAKING 섹션에 표시된 뉴스가 있으면 반드시 그것을 먼저 다룰 것.
+PART 1 — 어젯밤 핵심 이벤트 & 시장 충격 분석
+  규칙 (반드시 준수):
+  1. ⚡ BREAKING 섹션에 항목이 있으면 그 내용이 PART 1의 첫 번째 주제여야 한다.
+  2. 첫 문장: "어젯밤 [실명: Trump/Powell/Jensen Huang 등]이/가 [구체적 발표/수치/결정]을 발표하여 [지수/섹터/종목]에 [상승/하락/변동폭]을 미쳤다." 형식.
+  3. 대통령 발표, 연준 발언, 주요 기업(NVDA/AAPL 등) 실적·제품 발표가 있으면 반드시 별도 항목으로 각각 다룬다.
+  4. "글로벌 불확실성", "지정학적 리스크" 같은 추상 표현으로 시작 금지. 반드시 구체적 사건·수치·발언 인용.
 PART 2 — 시장 방향성 확률
 PART 3 — 섹터 리더십
 PART 4 — 핵심 리스크

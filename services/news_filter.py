@@ -27,6 +27,18 @@ HIGH_PRIORITY = [
     # 관세·무역 정책
     "trade deal", "export control", "import ban", "import tariff",
     "retaliatory", "reciprocal tariff",
+    # 핵심 기업 (개별 종목 뉴스 포착)
+    "nvidia", "nvda", "jensen huang",
+    "apple", "aapl", "tim cook",
+    "microsoft", "msft", "satya nadella",
+    "meta platforms", "meta ai", "zuckerberg",
+    "alphabet", "google", "sundar pichai",
+    "amazon", "aws", "andy jassy",
+    "tesla", "elon musk",
+    "amd", "intel", "broadcom", "qualcomm",
+    # 기업 이벤트
+    "product launch", "announced", "unveil", "revenue beat", "revenue miss",
+    "outlook raised", "outlook cut", "layoff", "restructur",
 ]
 
 MEDIUM_PRIORITY = [
@@ -73,12 +85,13 @@ AUTHORITATIVE_SOURCES: dict[str, float] = {
 
 # 카테고리별 최소 보장 건수 (총합 = TOTAL_LIMIT 이하)
 CATEGORY_QUOTA: dict[str, int] = {
-    "general": 14,   # 매크로·지정학·경제 지표
-    "forex":    6,   # 환율·통화
-    "crypto":   5,   # 암호화폐
-    "merger":   5,   # M&A·기업 이벤트
+    "general": 12,   # 매크로·지정학·경제 지표
+    "forex":    5,   # 환율·통화
+    "crypto":   4,   # 암호화폐
+    "merger":   4,   # M&A·기업 이벤트
+    "company": 10,   # 핵심 종목 기업 뉴스 (NVDA, AAPL 등)
 }
-TOTAL_LIMIT = 30
+TOTAL_LIMIT = 35
 
 
 def _source_bonus(source: str) -> float:
@@ -168,30 +181,37 @@ def format_for_llm(news_items: list[dict]) -> str:
     import datetime as _dt
     now = time.time()
 
-    # ⚡ BREAKING 섹션: 6h 이내 + 고점수 + 일반/환율 카테고리
+    # ⚡ BREAKING 섹션: 12h 이내 + 점수 4점 이상 + 매크로·기업·환율 카테고리
+    BREAKING_CATEGORIES = {"general", "forex", "company"}
     breaking = [
         x for x in news_items
-        if (now - (x.get("datetime") or 0)) < 6 * 3600
-        and x.get("_score", 0) >= 6
-        and x.get("_category", "general") in ("general", "forex")
+        if (now - (x.get("datetime") or 0)) < 12 * 3600
+        and x.get("_score", 0) >= 4
+        and x.get("_category", "general") in BREAKING_CATEGORIES
     ]
     breaking.sort(key=lambda x: x["_score"], reverse=True)
-    breaking = breaking[:3]
+    breaking = breaking[:5]
 
     text = ""
     if breaking:
-        text += "⚡ BREAKING: OVERNIGHT US MARKET-MOVING DEVELOPMENTS (last 6h)\n"
-        text += "(INSTRUCTION TO LLM: These items MUST be addressed first in PART 1 — name the specific person and their action)\n\n"
+        text += "⚡ BREAKING: HIGH-IMPACT OVERNIGHT DEVELOPMENTS (last 12h)\n"
+        text += (
+            "*** CRITICAL INSTRUCTION TO LLM ***\n"
+            "These are the most important recent events. PART 1 MUST open by naming the specific person/company "
+            "and their exact action. Do NOT write vague summaries. Prioritize ANY presidential announcement, "
+            "major company earnings/product launch, or Fed statement listed here.\n\n"
+        )
         for item in breaking:
             dt = item.get("datetime")
             time_str = (
                 _dt.datetime.utcfromtimestamp(dt).strftime("%H:%M UTC")
                 if dt else "N/A"
             )
-            text += f"▶ [{time_str}] {item.get('headline', '')}\n"
+            sym = f" [{item['_symbol']}]" if item.get("_symbol") else ""
+            text += f"▶ [{time_str}]{sym} {item.get('headline', '')}\n"
             summary = item.get("summary", "")
             if summary:
-                text += f"   {summary[:200]}\n"
+                text += f"   {summary[:250]}\n"
         text += "\n---\n\n"
 
     text += "=== TODAY'S KEY FINANCIAL & GEOPOLITICAL NEWS ===\n\n"
