@@ -943,10 +943,16 @@ function _buildGaugeSVG(score, activeColor) {
 async function loadCalendar() {
   const grid = document.getElementById('calendar-grid');
   if (!grid) return;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
   try {
-    const res = await fetch(API.calendar);
+    const res = await fetch(API.calendar, { signal: controller.signal });
+    clearTimeout(timer);
     const json = await res.json();
-    if (!json.data) { grid.innerHTML = ''; return; }
+    if (!json.data) {
+      grid.innerHTML = '<div class="calendar-empty">일정 데이터를 불러올 수 없습니다.</div>';
+      return;
+    }
     const { economic = [], earnings = [] } = json.data;
     if (!economic.length && !earnings.length) {
       grid.innerHTML = '<div class="calendar-empty">예정된 주요 일정이 없습니다.</div>';
@@ -954,8 +960,10 @@ async function loadCalendar() {
     }
     grid.innerHTML = _renderCalendar(economic, earnings);
   } catch (err) {
+    clearTimeout(timer);
     console.error('Calendar load failed:', err);
-    grid.innerHTML = '';
+    const msg = err.name === 'AbortError' ? '일정 로딩 시간 초과' : '일정을 불러오지 못했습니다.';
+    grid.innerHTML = `<div class="calendar-empty">${msg}</div>`;
   }
 }
 
