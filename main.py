@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 import scheduler as sched
 from config import settings
 from schemas import ApiResponse, Portfolio
-from services import briefing_store, market_data, portfolio_manager, stats_tracker
+from services import briefing_store, calendar_service, market_data, portfolio_manager, stats_tracker
 
 logging.basicConfig(
     level=logging.INFO,
@@ -76,7 +76,7 @@ async def briefing_stream(request: Request, lang: str = "ko", client_id: str = "
 # ===== 브리핑 API =====
 @app.get("/api/briefing/latest")
 async def get_latest_briefing():
-    record = briefing_store.load_latest()
+    record = await briefing_store.load_latest()
     if record is None:
         return JSONResponse({"data": None, "message": "브리핑이 없습니다."})
     return {"data": record.model_dump()}
@@ -84,14 +84,14 @@ async def get_latest_briefing():
 
 @app.get("/api/briefing/history")
 async def get_briefing_history(limit: int = 20):
-    records = briefing_store.list_briefings(limit=limit)
+    records = await briefing_store.list_briefings(limit=limit)
     # content 제외 — 히스토리 목록은 preview만 필요 (70KB → 2KB)
     return {"data": [r.model_dump(exclude={"content"}) for r in records]}
 
 
 @app.get("/api/briefing/{briefing_id}")
 async def get_briefing_by_id(briefing_id: str):
-    record = briefing_store.load_by_id(briefing_id)
+    record = await briefing_store.load_by_id(briefing_id)
     if record is None:
         return JSONResponse({"data": None, "message": "브리핑을 찾을 수 없습니다."}, status_code=404)
     return {"data": record.model_dump()}
@@ -130,6 +130,17 @@ async def get_portfolio(client_id: str = ""):
 async def save_portfolio_endpoint(portfolio: Portfolio, client_id: str = ""):
     await portfolio_manager.save_portfolio(portfolio, client_id)
     return {"data": portfolio.model_dump(), "message": "포트폴리오가 저장되었습니다."}
+
+
+# ===== 캘린더 =====
+@app.get("/api/calendar")
+async def get_calendar():
+    try:
+        data = await calendar_service.get_calendar()
+        return {"data": data}
+    except Exception as e:
+        logger.error(f"[Calendar] 오류: {e}")
+        return JSONResponse({"data": {"economic": [], "earnings": []}, "message": str(e)}, status_code=500)
 
 
 # ===== 설정 =====

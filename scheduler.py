@@ -60,7 +60,7 @@ async def run_pipeline(lang: str = "ko", client_id: str = "") -> AsyncGenerator[
                 generationTimeMs=elapsed_ms,
                 preview=content[:100].replace("\n", " "),
             )
-            briefing_store.save_briefing(record)
+            await briefing_store.save_briefing(record)
             await stats_tracker.record_api_call()
             logger.info("[Scheduler] API 호출 집계 완료")
 

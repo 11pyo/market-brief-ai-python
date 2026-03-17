@@ -20,7 +20,8 @@ const API = {
   portfolio: () => `/api/portfolio?client_id=${getClientId()}`,
   settings: '/api/settings',
   status: '/api/status',
-  stats: '/api/stats'
+  stats: '/api/stats',
+  calendar: '/api/calendar'
 };
 
 // ===== STATE =====
@@ -121,7 +122,7 @@ function switchTab(tabName) {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats()]);
+  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadCalendar()]);
 }
 
 // ===== SYSTEM STATS =====
@@ -160,7 +161,8 @@ function getDisplayData(data) {
   const converted = JSON.parse(JSON.stringify(data));
   const exchangeRateInfo = data['USD/KRW'];
   const exchangeRate = exchangeRateInfo ? exchangeRateInfo.price : 1400;
-  const usdAssets = ['S&P 500', 'NASDAQ', 'Dow Jones', 'Crude Oil (WTI)', 'Gold', 'BTC/USD'];
+  // 지수 포인트(S&P 500, NASDAQ, Dow Jones)는 통화 단위가 아니므로 환산 제외
+  const usdAssets = ['Crude Oil (WTI)', 'Gold', 'BTC/USD'];
   for (const name of usdAssets) {
     if (converted[name] && converted[name].price != null) {
       converted[name].price = converted[name].price * exchangeRate;
@@ -750,4 +752,101 @@ function showToast(message, type = 'info') {
   toast.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
+}
+
+// ===== CALENDAR =====
+async function loadCalendar() {
+  const grid = document.getElementById('calendar-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch(API.calendar);
+    const json = await res.json();
+    if (!json.data) { grid.innerHTML = ''; return; }
+    const { economic = [], earnings = [] } = json.data;
+    if (!economic.length && !earnings.length) {
+      grid.innerHTML = '<div class="calendar-empty">예정된 주요 일정이 없습니다.</div>';
+      return;
+    }
+    grid.innerHTML = _renderCalendar(economic, earnings);
+  } catch (err) {
+    console.error('Calendar load failed:', err);
+    grid.innerHTML = '';
+  }
+}
+
+function _renderCalendar(economic, earnings) {
+  const impactIcon = { high: '🔴', medium: '🟡', low: '⚪' };
+  const hourLabel = { bmo: '장전', amc: '장후', dmh: '장중' };
+
+  // 날짜별 그룹핑
+  const byDate = {};
+  const addToDate = (date, type, item) => {
+    if (!byDate[date]) byDate[date] = { economic: [], earnings: [] };
+    byDate[date][type].push(item);
+  };
+
+  economic.forEach(ev => {
+    const date = (ev.time || '').substring(0, 10) || '미정';
+    addToDate(date, 'economic', ev);
+  });
+  earnings.forEach(ev => {
+    addToDate(ev.date || '미정', 'earnings', ev);
+  });
+
+  const today = new Date().toISOString().substring(0, 10);
+  const sortedDates = Object.keys(byDate).sort();
+
+  let html = '<div class="cal-columns">';
+  for (const date of sortedDates) {
+    const isToday = date === today;
+    const dayLabel = _calDayLabel(date);
+    html += `<div class="cal-day${isToday ? ' cal-day--today' : ''}">`;
+    html += `<div class="cal-day-header">${isToday ? '🔔 ' : ''}${dayLabel}</div>`;
+
+    // 경제지표
+    for (const ev of byDate[date].economic) {
+      const icon = impactIcon[ev.impact] || '⚪';
+      const time = (ev.time || '').substring(11, 16) || '';
+      const est = ev.estimate != null ? ` <span class="cal-est">예상: ${ev.estimate}${ev.unit || ''}</span>` : '';
+      const prev = ev.prev != null ? ` <span class="cal-prev">이전: ${ev.prev}${ev.unit || ''}</span>` : '';
+      html += `<div class="cal-item cal-item--eco">
+        <span class="cal-icon">${icon}</span>
+        <div class="cal-item-body">
+          <span class="cal-name">${ev.country} · ${ev.event}</span>
+          <span class="cal-detail">${time}${est}${prev}</span>
+        </div>
+      </div>`;
+    }
+
+    // 어닝
+    for (const ev of byDate[date].earnings) {
+      const badge = ev.isMajor ? '<span class="cal-major">★</span>' : '';
+      const when = hourLabel[ev.hour] || ev.hour || '';
+      const eps = ev.epsEstimate != null ? ` <span class="cal-est">EPS 예상: $${ev.epsEstimate}</span>` : '';
+      html += `<div class="cal-item cal-item--earn${ev.isMajor ? ' cal-item--major' : ''}">
+        <span class="cal-icon">🏢</span>
+        <div class="cal-item-body">
+          <span class="cal-name">${badge}${ev.symbol} <span class="cal-co">${ev.company}</span></span>
+          <span class="cal-detail">${when}${eps}</span>
+        </div>
+      </div>`;
+    }
+
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function _calDayLabel(dateStr) {
+  if (!dateStr || dateStr === '미정') return '미정';
+  const d = new Date(dateStr + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  const weekdays = ['일','월','화','수','목','금','토'];
+  const wd = weekdays[d.getDay()];
+  const mmdd = `${d.getMonth()+1}/${d.getDate()}`;
+  if (diff === 0) return `오늘 (${mmdd} ${wd})`;
+  if (diff === 1) return `내일 (${mmdd} ${wd})`;
+  return `${mmdd} (${wd})`;
 }
