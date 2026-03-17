@@ -667,11 +667,35 @@ async function savePortfolio() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(portfolio)
     });
-    const json = await res.json();
-    showToast(json.message || t('toastPortfolioOk'), 'success');
+    await res.json();
+    showPortfolioSavedModal();
   } catch (err) {
     showToast(t('toastSaveFail'), 'error');
   }
+}
+
+function showPortfolioSavedModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'psave-overlay';
+  overlay.innerHTML = `
+    <div class="psave-modal">
+      <div class="psave-icon">✅</div>
+      <div class="psave-title">저장되었습니다</div>
+      <div class="psave-body">귀하의 포트폴리오 분석을 위해<br>새로운 브리핑 레포트를 생성해주세요.</div>
+      <div class="psave-actions">
+        <button class="psave-btn-generate" id="psave-go">🚀 브리핑 생성하기</button>
+        <button class="psave-btn-close" id="psave-close">닫기</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('#psave-close').addEventListener('click', close);
+  overlay.querySelector('#psave-go').addEventListener('click', () => {
+    close();
+    generateBriefing();
+  });
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 }
 
 // ===== CHART MODAL =====
