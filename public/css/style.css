@@ -2082,40 +2082,63 @@ input:checked + .slider:before { transform: translateX(20px); }
 .calendar-loading, .calendar-empty {
   color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;
 }
+
+/* 날짜 컬럼 수평 스크롤 */
 .cal-columns {
-  display: flex; gap: 10px; overflow-x: auto;
+  display: flex; gap: 8px; overflow-x: auto;
   padding-bottom: 6px; scrollbar-width: thin;
 }
 .cal-day {
-  flex: 0 0 auto; min-width: 180px; max-width: 220px;
+  flex: 0 0 auto; min-width: 160px; max-width: 200px;
   background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
+  border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;
 }
 .cal-day--today {
   border-color: rgba(99,102,241,0.5);
   background: rgba(99,102,241,0.06);
 }
 .cal-day-header {
-  font-size: 0.78rem; font-weight: 700;
-  color: var(--text-secondary); margin-bottom: 2px;
-  border-bottom: 1px solid var(--border); padding-bottom: 6px;
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border); padding-bottom: 5px;
 }
 .cal-day--today .cal-day-header { color: var(--accent); }
-.cal-item {
-  display: flex; gap: 7px; align-items: flex-start; font-size: 0.78rem;
+
+/* 경제지표 — 한 줄 compact row */
+.cal-eco-list { display: flex; flex-direction: column; gap: 3px; }
+.cal-eco-row {
+  display: flex; align-items: baseline; gap: 4px;
+  font-size: 0.68rem; line-height: 1.35;
 }
-.cal-icon { font-size: 0.85rem; line-height: 1.4; flex-shrink: 0; }
-.cal-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.cal-name {
-  font-weight: 600; color: var(--text-primary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.cal-eco-dot { flex-shrink: 0; font-size: 0.6rem; }
+.cal-eco-name {
+  flex: 1; color: var(--text-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.cal-co { font-weight: 400; color: var(--text-muted); font-size: 0.72rem; }
-.cal-detail { color: var(--text-muted); font-size: 0.71rem; }
-.cal-est { color: #60a5fa; }
-.cal-prev { color: var(--text-muted); }
-.cal-item--major .cal-name { color: #fbbf24; }
-.cal-major { color: #fbbf24; margin-right: 2px; }
+.cal-eco-time { flex-shrink: 0; color: var(--text-muted); font-size: 0.63rem; }
+
+/* 어닝 — 컴팩트 칩 그리드 */
+.cal-earn-chips {
+  display: flex; flex-wrap: wrap; gap: 4px;
+}
+.cal-chip {
+  display: flex; align-items: center; gap: 3px;
+  background: rgba(30,41,59,0.8); border: 1px solid var(--border);
+  border-radius: 5px; padding: 2px 6px;
+  font-size: 0.68rem;
+}
+.cal-chip--major {
+  border-color: rgba(251,191,36,0.35);
+  background: rgba(251,191,36,0.07);
+}
+.cal-chip-sym {
+  font-weight: 700; color: var(--text-primary);
+}
+.cal-chip--major .cal-chip-sym { color: #fbbf24; }
+.cal-chip-when {
+  color: var(--text-muted); font-size: 0.62rem;
+}
+
 @media (max-width: 640px) {
-  .cal-day { min-width: 160px; }
+  .cal-day { min-width: 140px; }
 }

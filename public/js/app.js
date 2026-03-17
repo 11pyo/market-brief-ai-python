@@ -996,33 +996,33 @@ function _renderCalendar(economic, earnings) {
     html += `<div class="cal-day${isToday ? ' cal-day--today' : ''}">`;
     html += `<div class="cal-day-header">${isToday ? '🔔 ' : ''}${dayLabel}</div>`;
 
-    // 경제지표
-    for (const ev of byDate[date].economic) {
-      const icon = impactIcon[ev.impact] || '⚪';
-      const time = (ev.time || '').substring(11, 16) || '';
-      const est = ev.estimate != null ? ` <span class="cal-est">예상: ${ev.estimate}${ev.unit || ''}</span>` : '';
-      const prev = ev.prev != null ? ` <span class="cal-prev">이전: ${ev.prev}${ev.unit || ''}</span>` : '';
-      html += `<div class="cal-item cal-item--eco">
-        <span class="cal-icon">${icon}</span>
-        <div class="cal-item-body">
-          <span class="cal-name">${ev.country} · ${ev.event}</span>
-          <span class="cal-detail">${time}${est}${prev}</span>
-        </div>
-      </div>`;
+    // 경제지표 — 한 줄 compact row
+    if (byDate[date].economic.length) {
+      html += '<div class="cal-eco-list">';
+      for (const ev of byDate[date].economic) {
+        const icon = impactIcon[ev.impact] || '⚪';
+        const time = (ev.time || '').substring(11, 16) || '';
+        html += `<div class="cal-eco-row">
+          <span class="cal-eco-dot">${icon}</span>
+          <span class="cal-eco-name">${ev.country} ${ev.event}</span>
+          ${time ? `<span class="cal-eco-time">${time}</span>` : ''}
+        </div>`;
+      }
+      html += '</div>';
     }
 
-    // 어닝
-    for (const ev of byDate[date].earnings) {
-      const badge = ev.isMajor ? '<span class="cal-major">★</span>' : '';
-      const when = hourLabel[ev.hour] || ev.hour || '';
-      const eps = ev.epsEstimate != null ? ` <span class="cal-est">EPS 예상: $${ev.epsEstimate}</span>` : '';
-      html += `<div class="cal-item cal-item--earn${ev.isMajor ? ' cal-item--major' : ''}">
-        <span class="cal-icon">🏢</span>
-        <div class="cal-item-body">
-          <span class="cal-name">${badge}${ev.symbol} <span class="cal-co">${ev.company}</span></span>
-          <span class="cal-detail">${when}${eps}</span>
-        </div>
-      </div>`;
+    // 어닝 — 컴팩트 칩 그리드
+    if (byDate[date].earnings.length) {
+      html += '<div class="cal-earn-chips">';
+      for (const ev of byDate[date].earnings) {
+        const when = hourLabel[ev.hour] || '';
+        const major = ev.isMajor ? ' cal-chip--major' : '';
+        html += `<div class="cal-chip${major}">
+          <span class="cal-chip-sym">${ev.symbol}</span>
+          ${when ? `<span class="cal-chip-when">${when}</span>` : ''}
+        </div>`;
+      }
+      html += '</div>';
     }
 
     html += '</div>';
