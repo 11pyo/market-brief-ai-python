@@ -16,7 +16,7 @@ _lock = asyncio.Lock()
 _scheduler: AsyncIOScheduler | None = None
 
 
-async def run_pipeline(lang: str = "ko") -> AsyncGenerator[dict, None]:
+async def run_pipeline(lang: str = "ko", client_id: str = "") -> AsyncGenerator[dict, None]:
     """브리핑 생성 파이프라인. SSE 이벤트를 yield한다."""
     if _lock.locked():
         yield {"type": "error", "message": "Already generating a briefing. Please wait."}
@@ -39,7 +39,7 @@ async def run_pipeline(lang: str = "ko") -> AsyncGenerator[dict, None]:
             # Step 3: 시장 데이터 포맷 + 포트폴리오 로드
             yield {"type": "progress", "step": 3, "message": "시장 데이터 처리 중..."}
             market_text = market_data.format_for_llm(snapshot)
-            portfolio = portfolio_manager.get_portfolio()
+            portfolio = await portfolio_manager.get_portfolio(client_id)
             portfolio_text = portfolio_manager.format_for_llm(portfolio)
 
             # Step 4: AI 분석
@@ -74,7 +74,7 @@ async def run_pipeline(lang: str = "ko") -> AsyncGenerator[dict, None]:
 async def _scheduled_run() -> None:
     """APScheduler에 의해 매일 실행."""
     logger.info("[Scheduler] 자동 브리핑 생성 시작")
-    async for event in run_pipeline():
+    async for event in run_pipeline(client_id=""):
         if event.get("type") == "complete":
             logger.info("[Scheduler] 자동 브리핑 생성 완료")
         elif event.get("type") == "error":

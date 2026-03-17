@@ -1,5 +1,15 @@
 // ===== AI 모닝 마켓 브리핑 - Frontend App =====
 
+// ===== CLIENT ID (사용자 식별) =====
+function getClientId() {
+  let id = localStorage.getItem('mbai_client_id');
+  if (!id) {
+    id = crypto.randomUUID().replace(/-/g, '');
+    localStorage.setItem('mbai_client_id', id);
+  }
+  return id;
+}
+
 const API = {
   briefingLatest: '/api/briefing/latest',
   briefingHistory: '/api/briefing/history',
@@ -7,7 +17,7 @@ const API = {
   briefingGenerate: '/api/briefing/generate/stream',
   marketSnapshot: '/api/market/snapshot',
   marketChart: (name, period) => `/api/market/chart?name=${encodeURIComponent(name)}&period=${period}`,
-  portfolio: '/api/portfolio',
+  portfolio: () => `/api/portfolio?client_id=${getClientId()}`,
   settings: '/api/settings',
   status: '/api/status',
   stats: '/api/stats'
@@ -444,6 +454,7 @@ async function generateBriefing() {
     const url = new URL(API.briefingGenerate, window.location.origin);
     url.searchParams.append('currency', currentCurrency);
     url.searchParams.append('lang', currentLang);
+    url.searchParams.append('client_id', getClientId());
     const eventSource = new EventSource(url.toString());
     let stepIndex = 1;
 
@@ -554,7 +565,7 @@ async function loadBriefingById(id) {
 // ===== PORTFOLIO =====
 async function loadPortfolio() {
   try {
-    const res = await fetch(API.portfolio);
+    const res = await fetch(API.portfolio());
     const json = await res.json();
     if (json.data) populatePortfolioForm(json.data);
   } catch (err) {
@@ -605,7 +616,7 @@ async function savePortfolio() {
     watchlist
   };
   try {
-    const res = await fetch(API.portfolio, {
+    const res = await fetch(API.portfolio(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(portfolio)

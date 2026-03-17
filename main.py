@@ -57,9 +57,9 @@ async def track_visits(request: Request, call_next):
 
 # ===== SSE 브리핑 생성 =====
 @app.get("/api/briefing/generate/stream")
-async def briefing_stream(request: Request, lang: str = "ko"):
+async def briefing_stream(request: Request, lang: str = "ko", client_id: str = ""):
     async def generate():
-        async for event in sched.run_pipeline(lang=lang):
+        async for event in sched.run_pipeline(lang=lang, client_id=client_id):
             if await request.is_disconnected():
                 logger.info("[SSE] 클라이언트 연결 해제")
                 break
@@ -121,14 +121,14 @@ async def get_market_chart(name: str, period: str = "1d"):
 
 # ===== 포트폴리오 =====
 @app.get("/api/portfolio")
-async def get_portfolio():
-    portfolio = portfolio_manager.get_portfolio()
+async def get_portfolio(client_id: str = ""):
+    portfolio = await portfolio_manager.get_portfolio(client_id)
     return {"data": portfolio.model_dump()}
 
 
 @app.post("/api/portfolio")
-async def save_portfolio(portfolio: Portfolio):
-    portfolio_manager.save_portfolio(portfolio)
+async def save_portfolio_endpoint(portfolio: Portfolio, client_id: str = ""):
+    await portfolio_manager.save_portfolio(portfolio, client_id)
     return {"data": portfolio.model_dump(), "message": "포트폴리오가 저장되었습니다."}
 
 
