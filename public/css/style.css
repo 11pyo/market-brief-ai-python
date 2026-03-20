@@ -1406,10 +1406,10 @@ input:checked + .slider:before { transform: translateX(20px); }
 .market-card:hover .card-chart-hint { opacity: 0.8; }
 
 /* Stats Ribbon */
-.stats-ribbon { display: flex; justify-content: center; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 24px; margin: 16px 20px 0; gap: 24px; }
-.stat-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 1.25rem; font-weight: 700; color: var(--text-heading); }
+.stats-ribbon { display: flex; justify-content: center; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 7px 20px; margin: 10px 20px 0; gap: 20px; }
+.stat-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 1.1rem; font-weight: 700; color: var(--text-heading); }
 .stat-divider { width: 1px; height: 24px; background: var(--border-subtle); }
 
 /* ===== 언어 변경 재생성 확인 팝업 ===== */
@@ -2137,7 +2137,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   font-size: 0.72rem; font-weight: 700; padding: 2px 8px;
   border-radius: 20px; border: 1px solid; white-space: nowrap;
 }
-.fg-svg { width: 160px; height: 88px; }
+.fg-svg { width: 160px; height: 106px; }
 .fg-score-block { display: flex; align-items: baseline; gap: 8px; }
 .fg-score-num { font-size: 2.2rem; font-weight: 800; line-height: 1; }
 .fg-score-label { font-size: 0.9rem; font-weight: 600; }
@@ -2154,7 +2154,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 @media (max-width: 480px) {
   .fg-card { flex-direction: column; align-items: stretch; gap: 12px; }
   .fg-left { align-items: flex-start; flex-direction: row; gap: 12px; align-items: center; }
-  .fg-svg { width: 130px; height: 72px; }
+  .fg-svg { width: 130px; height: 86px; }
 }
 
 /* ===== CALENDAR SECTION ===== */
