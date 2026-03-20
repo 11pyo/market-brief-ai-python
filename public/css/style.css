@@ -1815,8 +1815,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 /* Sidebar ad — desktop only */
 .ad-slot--sidebar {
   min-height: 600px;
-  position: sticky;
-  top: 80px;
 }
 
 .ad-slot--sidebar2 {
@@ -1847,6 +1845,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
   .sidebar-ad-col {
     display: block;
+    position: sticky;
+    top: 80px;
   }
 }
 
