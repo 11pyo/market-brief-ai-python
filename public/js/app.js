@@ -19,6 +19,7 @@ const API = {
   marketChart: (name, period) => `/api/market/chart?name=${encodeURIComponent(name)}&period=${period}`,
   portfolio: () => `/api/portfolio?client_id=${getClientId()}`,
   sectors: '/api/market/sectors',
+  fearGreed: '/api/market/fear-greed',
   settings: '/api/settings',
   status: '/api/status',
   stats: '/api/stats',
@@ -85,7 +86,7 @@ function initTabs() {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
   });
   document.getElementById('btn-generate').addEventListener('click', generateBriefing);
-  document.getElementById('btn-refresh-market').addEventListener('click', loadMarketData);
+  document.getElementById('btn-refresh-market').addEventListener('click', () => { loadMarketData(); loadFearGreed(); });
   document.getElementById('btn-save-portfolio').addEventListener('click', savePortfolio);
   document.getElementById('btn-add-allocation').addEventListener('click', addAllocationRow);
 
@@ -123,7 +124,7 @@ function switchTab(tabName) {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadSectors()]);
+  await Promise.all([loadMarketData(), loadLatestBriefing(), loadStats(), loadSectors(), loadFearGreed()]);
 }
 
 // ===== SYSTEM STATS =====
@@ -151,7 +152,6 @@ async function loadMarketData() {
       rawMarketData = json.data;
       renderMarketCards(rawMarketData);
       renderTickerStrip(rawMarketData);
-      renderFearGreed(rawMarketData);
       const updEl = document.getElementById('market-updated');
       if (updEl) {
         const now = new Date();
@@ -849,6 +849,71 @@ async function loadSectors() {
 }
 
 // ===== FEAR & GREED INDEX =====
+async function loadFearGreed() {
+  try {
+    const res  = await fetch(API.fearGreed);
+    const json = await res.json();
+    if (json.data) {
+      _renderFearGreedCNN(json.data);
+      return;
+    }
+  } catch (err) {
+    console.warn('[FearGreed] CNN 조회 실패, computed fallback 사용:', err);
+  }
+  // CNN 실패 시 yfinance 기반 계산값으로 fallback
+  if (rawMarketData) renderFearGreed(rawMarketData);
+}
+
+function _renderFearGreedCNN(cnn) {
+  const section = document.getElementById('fg-section');
+  const svgEl   = document.getElementById('fg-svg');
+  if (!section || !svgEl) return;
+
+  const score = Math.round(cnn.score);
+  const color = cnn.color;
+
+  section.style.display = '';
+  svgEl.innerHTML = _buildGaugeSVG(score, color);
+
+  document.getElementById('fg-score-num').textContent   = score;
+  document.getElementById('fg-score-num').style.color   = color;
+  document.getElementById('fg-score-label').textContent = cnn.rating_ko || cnn.rating;
+  document.getElementById('fg-score-label').style.color = color;
+
+  const badge = document.getElementById('fg-badge');
+  badge.textContent       = cnn.rating_ko || cnn.rating;
+  badge.style.color       = color;
+  badge.style.background  = color + '18';
+  badge.style.borderColor = color + '50';
+
+  // 비교 행 (전일·1주·1개월)
+  const prev  = cnn.previous_close  || 0;
+  const wk1   = cnn.previous_1week  || 0;
+  const mo1   = cnn.previous_1month || 0;
+  const _arrow = (ref) => score > ref ? '▲' : score < ref ? '▼' : '—';
+  const _cls   = (ref) => score > ref ? '#22c55e' : score < ref ? '#ef4444' : '#aaa';
+
+  document.getElementById('fg-components').innerHTML =
+    `<div class="fg-comp-row">
+      <span class="fg-comp-label">전일 종가</span>
+      <div class="fg-comp-bar"><div style="width:${prev}%;background:${_cls(prev)}"></div></div>
+      <span class="fg-comp-val" style="color:${_cls(prev)}">${_arrow(prev)} ${prev}</span>
+    </div>
+    <div class="fg-comp-row">
+      <span class="fg-comp-label">1주 전</span>
+      <div class="fg-comp-bar"><div style="width:${wk1}%;background:${_cls(wk1)}"></div></div>
+      <span class="fg-comp-val" style="color:${_cls(wk1)}">${_arrow(wk1)} ${wk1}</span>
+    </div>
+    <div class="fg-comp-row">
+      <span class="fg-comp-label">1개월 전</span>
+      <div class="fg-comp-bar"><div style="width:${mo1}%;background:${_cls(mo1)}"></div></div>
+      <span class="fg-comp-val" style="color:${_cls(mo1)}">${_arrow(mo1)} ${mo1}</span>
+    </div>`;
+
+  const note = document.getElementById('fg-note');
+  if (note) note.innerHTML = 'Source: <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">CNN Fear & Greed Index</a>';
+}
+
 function renderFearGreed(data) {
   const section = document.getElementById('fg-section');
   const svgEl   = document.getElementById('fg-svg');

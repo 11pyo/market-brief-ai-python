@@ -2,9 +2,77 @@ import asyncio
 import logging
 import time
 
+import httpx
 import yfinance as yf
 
 logger = logging.getLogger(__name__)
+
+
+# ===== CNN FEAR & GREED INDEX =====
+# 비공식 CNN 데이터비즈 엔드포인트 (고정 URL, 사용자 입력 아님)
+_CNN_FG_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+_CNN_FG_CACHE: tuple[float, dict] | None = None
+_CNN_FG_CACHE_TTL = 300  # 5분
+
+_CNN_FG_RATING_KO: dict[str, str] = {
+    "Extreme Fear": "극도의 공포",
+    "Fear": "공포",
+    "Neutral": "중립",
+    "Greed": "탐욕",
+    "Extreme Greed": "극도의 탐욕",
+}
+_CNN_FG_COLORS: dict[str, str] = {
+    "Extreme Fear": "#ef4444",
+    "Fear":         "#f97316",
+    "Neutral":      "#eab308",
+    "Greed":        "#84cc16",
+    "Extreme Greed":"#22c55e",
+}
+
+
+async def get_cnn_fear_greed() -> dict | None:
+    """CNN Fear & Greed Index 조회. 5분 캐시. 실패 시 None 반환."""
+    global _CNN_FG_CACHE
+    now = time.time()
+    if _CNN_FG_CACHE:
+        cached_at, cached_data = _CNN_FG_CACHE
+        if now - cached_at < _CNN_FG_CACHE_TTL:
+            logger.debug("[FearGreed] 캐시 히트")
+            return cached_data
+
+    try:
+        # [SECURE] 고정 URL 사용 - SSRF 방지 (사용자 입력 URL 미사용)
+        headers = {"User-Agent": "Mozilla/5.0 (compatible; MarketBriefBot/1.0)"}
+        async with httpx.AsyncClient(timeout=10, headers=headers) as client:
+            resp = await client.get(_CNN_FG_URL)
+            resp.raise_for_status()
+            data = resp.json()
+
+        fg = data.get("fear_and_greed", {})
+        score_raw = fg.get("score")
+        rating = fg.get("rating", "")
+        if score_raw is None:
+            logger.warning("[FearGreed] CNN 응답에 score 없음")
+            return None
+
+        score = round(float(score_raw), 1)
+        result = {
+            "score":          score,
+            "rating":         rating,
+            "rating_ko":      _CNN_FG_RATING_KO.get(rating, rating),
+            "color":          _CNN_FG_COLORS.get(rating, "#eab308"),
+            "previous_close": round(float(fg.get("previous_close") or 0), 1),
+            "previous_1week": round(float(fg.get("previous_1_week") or 0), 1),
+            "previous_1month":round(float(fg.get("previous_1_month") or 0), 1),
+            "timestamp":      fg.get("timestamp", ""),
+        }
+        _CNN_FG_CACHE = (now, result)
+        logger.info(f"[FearGreed] CNN F&G 조회 완료: {score} ({rating})")
+        return result
+
+    except Exception as e:
+        logger.warning(f"[FearGreed] CNN 조회 실패: {e}")
+        return None
 
 # 표시명 → Yahoo Finance 심볼
 SYMBOLS: dict[str, str] = {
@@ -173,7 +241,7 @@ async def get_chart(name: str, period: str = "1d") -> list:
     return candles
 
 
-def format_for_llm(snapshot: dict) -> str:
+def format_for_llm(snapshot: dict, fear_greed: dict | None = None) -> str:
     text = "=== CURRENT MARKET DATA ===\n"
     for name, data in snapshot.items():
         if data["price"] is not None:
@@ -182,4 +250,13 @@ def format_for_llm(snapshot: dict) -> str:
             text += f"{name}: {data['price']:,.2f} {direction} {abs(data['change'] or 0):.2f}{pct}\n"
         else:
             text += f"{name}: N/A\n"
+
+    if fear_greed:
+        text += (
+            f"\n=== CNN FEAR & GREED INDEX (Source: CNN Markets) ===\n"
+            f"Score: {fear_greed['score']} / 100 — {fear_greed['rating']} ({fear_greed['rating_ko']})\n"
+            f"Previous Close: {fear_greed['previous_close']} | "
+            f"1 Week Ago: {fear_greed['previous_1week']} | "
+            f"1 Month Ago: {fear_greed['previous_1month']}\n"
+        )
     return text

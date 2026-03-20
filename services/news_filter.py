@@ -63,6 +63,7 @@ AUTHORITATIVE_SOURCES: dict[str, float] = {
     "associated press":     5,
     "ap news":              5,
     "afp":                  4,
+    "cnn":                  4,   # CNN Business / CNN Markets
     # Tier 2 — 신뢰도 높은 경제·금융 미디어 (+3점)
     "cnbc":                 3,
     "bbc":                  3,

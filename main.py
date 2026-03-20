@@ -132,6 +132,19 @@ async def save_portfolio_endpoint(portfolio: Portfolio, client_id: str = ""):
     return {"data": portfolio.model_dump(), "message": "포트폴리오가 저장되었습니다."}
 
 
+# ===== CNN FEAR & GREED =====
+@app.get("/api/market/fear-greed")
+async def get_fear_greed():
+    try:
+        data = await market_data.get_cnn_fear_greed()
+        if data is None:
+            return JSONResponse({"data": None, "message": "CNN Fear & Greed 데이터를 가져올 수 없습니다."}, status_code=503)
+        return {"data": data}
+    except Exception as e:
+        logger.error(f"[FearGreed] 오류: {e}")
+        return JSONResponse({"data": None, "message": str(e)}, status_code=500)
+
+
 # ===== 섹터 ETF =====
 @app.get("/api/market/sectors")
 async def get_sector_snapshot():

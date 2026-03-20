@@ -24,11 +24,12 @@ async def run_pipeline(lang: str = "ko", client_id: str = "") -> AsyncGenerator[
 
     async with _lock:
         try:
-            # Step 1: 뉴스 + 시장 데이터 병렬 수집
-            yield {"type": "progress", "step": 1, "message": "뉴스 수집 중..."}
-            raw_news, snapshot = await asyncio.gather(
+            # Step 1: 뉴스 + 시장 데이터 + CNN F&G 병렬 수집
+            yield {"type": "progress", "step": 1, "message": "뉴스 및 시장 데이터 수집 중..."}
+            raw_news, snapshot, fear_greed = await asyncio.gather(
                 news_collector.collect_all(),
                 market_data.get_snapshot(),
+                market_data.get_cnn_fear_greed(),
             )
 
             # Step 2: 뉴스 필터링
@@ -38,7 +39,7 @@ async def run_pipeline(lang: str = "ko", client_id: str = "") -> AsyncGenerator[
 
             # Step 3: 시장 데이터 포맷 + 포트폴리오 로드
             yield {"type": "progress", "step": 3, "message": "시장 데이터 처리 중..."}
-            market_text = market_data.format_for_llm(snapshot)
+            market_text = market_data.format_for_llm(snapshot, fear_greed=fear_greed)
             portfolio = await portfolio_manager.get_portfolio(client_id)
             portfolio_text = portfolio_manager.format_for_llm(portfolio)
 
