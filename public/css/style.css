@@ -1813,13 +1813,20 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 /* Sidebar ad — desktop only */
+.sidebar-sticky-wrap {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .ad-slot--sidebar {
   min-height: 600px;
 }
 
 .ad-slot--sidebar2 {
   min-height: 250px;
-  margin-top: 16px;
 }
 
 /* ===== SIDEBAR LAYOUT ===== */
@@ -1845,8 +1852,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 
   .sidebar-ad-col {
     display: block;
-    position: sticky;
-    top: 80px;
   }
 }
 
