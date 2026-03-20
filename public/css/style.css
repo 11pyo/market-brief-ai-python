@@ -1819,6 +1819,11 @@ input:checked + .slider:before { transform: translateX(20px); }
   top: 80px;
 }
 
+.ad-slot--sidebar2 {
+  min-height: 250px;
+  margin-top: 16px;
+}
+
 /* ===== SIDEBAR LAYOUT ===== */
 .content-with-sidebar {
   display: block;
