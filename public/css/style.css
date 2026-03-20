@@ -1406,7 +1406,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .market-card:hover .card-chart-hint { opacity: 0.8; }
 
 /* Stats Ribbon */
-.stats-ribbon { display: flex; justify-content: center; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 7px 20px; margin: 10px 20px 24px; gap: 20px; }
+.stats-ribbon { display: flex; justify-content: center; align-items: center; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 7px 20px; margin: 10px 20px 32px; gap: 20px; }
 .stat-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-value { font-size: 1.1rem; font-weight: 700; color: var(--text-heading); }
