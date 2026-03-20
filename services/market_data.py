@@ -42,8 +42,13 @@ async def get_cnn_fear_greed() -> dict | None:
 
     try:
         # [SECURE] 고정 URL 사용 - SSRF 방지 (사용자 입력 URL 미사용)
-        headers = {"User-Agent": "Mozilla/5.0 (compatible; MarketBriefBot/1.0)"}
-        async with httpx.AsyncClient(timeout=10, headers=headers) as client:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Referer":    "https://edition.cnn.com/markets/fear-and-greed",
+            "Origin":     "https://edition.cnn.com",
+            "Accept":     "application/json, text/plain, */*",
+        }
+        async with httpx.AsyncClient(timeout=10, headers=headers, follow_redirects=True) as client:
             resp = await client.get(_CNN_FG_URL)
             resp.raise_for_status()
             data = resp.json()
@@ -51,6 +56,16 @@ async def get_cnn_fear_greed() -> dict | None:
         fg = data.get("fear_and_greed", {})
         score_raw = fg.get("score")
         rating = fg.get("rating", "")
+
+        # fear_and_greed 필드가 없거나 score가 없으면 historical 최신 항목으로 폴백
+        if score_raw is None:
+            historical = data.get("fear_and_greed_historical", {}).get("data", [])
+            if historical:
+                latest = historical[-1]
+                score_raw = latest.get("y")
+                rating = latest.get("rating", "")
+                logger.warning("[FearGreed] fear_and_greed 없음 → historical 최신 항목 사용")
+
         if score_raw is None:
             logger.warning("[FearGreed] CNN 응답에 score 없음")
             return None
