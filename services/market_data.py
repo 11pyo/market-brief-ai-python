@@ -50,12 +50,17 @@ async def get_cnn_fear_greed() -> dict | None:
         }
         async with httpx.AsyncClient(timeout=10, headers=headers, follow_redirects=True) as client:
             resp = await client.get(_CNN_FG_URL)
+            logger.info(f"[FearGreed] CNN 응답 status={resp.status_code}")
             resp.raise_for_status()
             data = resp.json()
+
+        # 응답 최상위 키 로깅 (구조 파악용)
+        logger.info(f"[FearGreed] 응답 최상위 키: {list(data.keys())}")
 
         fg = data.get("fear_and_greed", {})
         score_raw = fg.get("score")
         rating = fg.get("rating", "")
+        logger.info(f"[FearGreed] fear_and_greed 필드: score={score_raw}, rating={rating}")
 
         # fear_and_greed 필드가 없거나 score가 없으면 historical 최신 항목으로 폴백
         if score_raw is None:
@@ -64,10 +69,10 @@ async def get_cnn_fear_greed() -> dict | None:
                 latest = historical[-1]
                 score_raw = latest.get("y")
                 rating = latest.get("rating", "")
-                logger.warning("[FearGreed] fear_and_greed 없음 → historical 최신 항목 사용")
+                logger.warning(f"[FearGreed] historical 최신 항목 사용: score={score_raw}, rating={rating}")
 
         if score_raw is None:
-            logger.warning("[FearGreed] CNN 응답에 score 없음")
+            logger.warning(f"[FearGreed] score 없음. 응답 일부: {str(data)[:300]}")
             return None
 
         score = round(float(score_raw), 1)

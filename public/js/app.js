@@ -857,11 +857,20 @@ async function loadFearGreed() {
       _renderFearGreedCNN(json.data);
       return;
     }
+    console.warn('[FearGreed] CNN 응답에 data 없음:', json);
   } catch (err) {
-    console.warn('[FearGreed] CNN 조회 실패, computed fallback 사용:', err);
+    console.warn('[FearGreed] CNN 조회 실패:', err);
   }
-  // CNN 실패 시 yfinance 기반 계산값으로 fallback
-  if (rawMarketData) renderFearGreed(rawMarketData);
+  // CNN 실패 시 — 잘못된 계산값 대신 로딩 실패 표시
+  const section = document.getElementById('fg-section');
+  if (section) {
+    const badge = section.querySelector('#fg-badge');
+    const score = section.querySelector('#fg-score');
+    const note  = section.querySelector('#fg-note');
+    if (badge) badge.textContent = '—';
+    if (score) score.textContent = '—';
+    if (note)  note.textContent  = 'CNN 데이터를 불러올 수 없습니다.';
+  }
 }
 
 function _renderFearGreedCNN(cnn) {
