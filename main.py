@@ -292,6 +292,17 @@ async def favicon():
     return FileResponse("public/icons/icon-192.png", media_type="image/png")
 
 
+# ===== 검색엔진 사이트 인증 =====
+@app.get("/googleb6c316d4f0a32191.html", response_class=PlainTextResponse)
+async def google_verification():
+    return "google-site-verification: googleb6c316d4f0a32191.html"
+
+
+@app.get("/naver9852772a7a775c99a2a8e2b752baaf21.html", response_class=PlainTextResponse)
+async def naver_verification():
+    return "naver-site-verification: naver9852772a7a775c99a2a8e2b752baaf21.html"
+
+
 # ===== 정적 파일 & SPA 폴백 =====
 app.mount("/css", StaticFiles(directory="public/css"), name="css")
 app.mount("/js", StaticFiles(directory="public/js"), name="js")
