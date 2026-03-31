@@ -3,10 +3,12 @@ import json
 import logging
 from contextlib import asynccontextmanager
 
+from datetime import datetime, timezone
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 import scheduler as sched
@@ -199,6 +201,97 @@ async def get_stats():
     return {"data": await stats_tracker.get_stats()}
 
 
+SITE_URL = "https://market-brief-ai-python.onrender.com"
+
+
+# ===== SEO: robots.txt =====
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def robots_txt():
+    return (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /api/\n"
+        "Disallow: /js/\n"
+        "Disallow: /css/\n"
+        "\n"
+        f"Sitemap: {SITE_URL}/sitemap.xml\n"
+    )
+
+
+# ===== SEO: sitemap.xml =====
+@app.get("/sitemap.xml")
+async def sitemap_xml():
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    urls = [
+        f'  <url><loc>{SITE_URL}/</loc><lastmod>{today}</lastmod>'
+        f'<changefreq>daily</changefreq><priority>1.0</priority></url>',
+    ]
+    try:
+        records = await briefing_store.list_briefings(limit=20)
+        for r in records:
+            date_str = r.generatedAt[:10] if r.generatedAt else today
+            urls.append(
+                f'  <url><loc>{SITE_URL}/?briefing={r.id}</loc>'
+                f'<lastmod>{date_str}</lastmod>'
+                f'<changefreq>never</changefreq><priority>0.6</priority></url>'
+            )
+    except Exception as e:
+        logger.warning(f"[Sitemap] 브리핑 목록 로드 실패: {e}")
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>"
+    )
+    return Response(content=xml, media_type="application/xml")
+
+
+# ===== SEO: llms.txt (AI 에이전트 발견용) =====
+@app.get("/llms.txt", response_class=PlainTextResponse)
+async def llms_txt():
+    return (
+        "# 증시흐름 (Market Brief AI)\n"
+        "\n"
+        "> AI-powered daily morning market briefing platform\n"
+        "> for global investors. Hedge fund-style structured analysis.\n"
+        "\n"
+        "## What is this?\n"
+        "A free web application that generates daily AI market briefings\n"
+        "with real-time data from S&P 500, Nasdaq, DJI, VIX, crypto, and forex.\n"
+        "Each briefing follows a 6-part hedge fund morning note structure:\n"
+        "1. Key overnight events\n"
+        "2. Market direction probability\n"
+        "3. Sector leadership analysis\n"
+        "4. Key risks\n"
+        "5. Trade ideas with entry/target/stop\n"
+        "6. 10-second market dashboard\n"
+        "\n"
+        "## Features\n"
+        "- AI-generated 6-part structured market briefings (daily)\n"
+        "- Real-time market data dashboard (S&P 500, Nasdaq, DJI, VIX, BTC, ETH, EUR/USD)\n"
+        "- Sector ETF performance tracking (XLK, XLE, XLF, etc.)\n"
+        "- CNN Fear & Greed Index integration\n"
+        "- Portfolio-aware personalized advice (Part 7)\n"
+        "- Economic calendar and earnings dates\n"
+        "- Multi-language support: Korean, English, Chinese, Japanese\n"
+        "- Progressive Web App (PWA) - installable on mobile\n"
+        "\n"
+        "## Target Users\n"
+        "Retail investors, traders, portfolio managers, and anyone seeking\n"
+        "free AI-powered daily macro market analysis.\n"
+        "\n"
+        f"## URL\n{SITE_URL}/\n"
+        "\n"
+        "## Source Code\nhttps://github.com/11pyo/market-brief-ai-python\n"
+    )
+
+
+# ===== SEO: favicon =====
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse("public/icons/icon-192.png", media_type="image/png")
+
+
 # ===== 정적 파일 & SPA 폴백 =====
 app.mount("/css", StaticFiles(directory="public/css"), name="css")
 app.mount("/js", StaticFiles(directory="public/js"), name="js")
@@ -207,7 +300,6 @@ app.mount("/icons", StaticFiles(directory="public/icons"), name="icons")
 
 @app.get("/{full_path:path}")
 async def spa_fallback(full_path: str):
-    from fastapi.responses import FileResponse
     return FileResponse("public/index.html")
 
 
