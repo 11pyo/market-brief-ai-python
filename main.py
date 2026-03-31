@@ -205,7 +205,7 @@ SITE_URL = "https://market-brief-ai-python.onrender.com"
 
 
 # ===== SEO: robots.txt =====
-@app.get("/robots.txt", response_class=PlainTextResponse)
+@app.api_route("/robots.txt", methods=["GET", "HEAD"], response_class=PlainTextResponse)
 async def robots_txt():
     return (
         "User-agent: *\n"
@@ -219,7 +219,7 @@ async def robots_txt():
 
 
 # ===== SEO: sitemap.xml =====
-@app.get("/sitemap.xml")
+@app.api_route("/sitemap.xml", methods=["GET", "HEAD"])
 async def sitemap_xml():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = [
@@ -247,7 +247,7 @@ async def sitemap_xml():
 
 
 # ===== SEO: llms.txt (AI 에이전트 발견용) =====
-@app.get("/llms.txt", response_class=PlainTextResponse)
+@app.api_route("/llms.txt", methods=["GET", "HEAD"], response_class=PlainTextResponse)
 async def llms_txt():
     return (
         "# 증시흐름 (Market Brief AI)\n"
