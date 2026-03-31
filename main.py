@@ -303,6 +303,12 @@ async def naver_verification():
     return "naver-site-verification: naver9852772a7a775c99a2a8e2b752baaf21.html"
 
 
+@app.get("/BingSiteAuth.xml")
+async def bing_verification():
+    xml = '<?xml version="1.0"?>\n<users>\n\t<user>BF2602034EBCA1A253B7019A8222C6FF</user>\n</users>'
+    return Response(content=xml, media_type="application/xml")
+
+
 # ===== 정적 파일 & SPA 폴백 =====
 app.mount("/css", StaticFiles(directory="public/css"), name="css")
 app.mount("/js", StaticFiles(directory="public/js"), name="js")
